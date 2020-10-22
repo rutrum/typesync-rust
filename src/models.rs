@@ -28,7 +28,36 @@ impl SongStats {
                 s.uppercase += 1;
             }
         }
+        
+        // May need some +1/-1 depending on line endings
 
         s
     }
+
+    pub fn rate(&self) -> SongDifficulty {
+        let score = self.lowercase
+            + self.uppercase * 4
+            + self.numeric * 4
+            + self.whitespace
+            + self.punctuation * 6;
+
+        use SongDifficulty::*;
+        match score {
+            x if x < 1300 * 1 => Novice,
+            x if x < 1300 * 2 => Apprentice,
+            x if x < 1300 * 3 => Adept,
+            x if x < 1300 * 4 => Expert,
+            _ => Master,
+        }
+    }
+}
+
+/// Labeled after difficulties in Skyrim.
+#[derive(Clone, Copy, Debug)]
+pub enum SongDifficulty {
+    Novice,
+    Apprentice,
+    Adept,
+    Expert,
+    Master,
 }
