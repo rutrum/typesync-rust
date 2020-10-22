@@ -9,3 +9,6 @@ web:
 
 serve: web
     (cd client; microserver)
+
+tree:
+    tree -I "pkg|target" --dirsfirst

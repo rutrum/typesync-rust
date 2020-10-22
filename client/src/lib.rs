@@ -1,4 +1,5 @@
 use seed::{prelude::*, *};
+mod title;
 
 enum Page {
     Home,
@@ -9,7 +10,14 @@ struct Model {
     color: String,
 }
 
-enum Msg {
+fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
+    Model {
+        page: Page::Home,
+        color: "red".to_string(),
+    }
+}
+
+pub enum Msg {
     Click,
 }
 
@@ -25,18 +33,11 @@ fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
     }
 }
 
-fn view(model: &Model) -> impl IntoNodes<Msg> {
+fn view(model: &Model) -> Node<Msg> {
     div![
-        format!("{}", model.color), 
+        title::view(),
         ev(Ev::Click, |_| Msg::Click), 
     ]
-}
-
-fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
-    Model {
-        page: Page::Home,
-        color: "red".to_string(),
-    }
 }
 
 #[wasm_bindgen(start)]
