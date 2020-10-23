@@ -1,13 +1,14 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_cors;
 
 use typesync::SongRequest;
 
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
 use rocket_contrib::json::Json;
+use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
 
 #[post("/lyrics", data = "<request>")]
 fn song_request(request: Json<SongRequest>) -> String {
@@ -24,7 +25,8 @@ fn main() -> Result<(), Error> {
         allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
         allow_credentials: true,
         ..Default::default()
-    }.to_cors()?;
+    }
+    .to_cors()?;
 
     rocket::ignite()
         .mount("/", routes![song_request])

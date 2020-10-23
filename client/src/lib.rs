@@ -1,8 +1,8 @@
 use seed::{prelude::*, *};
 use typesync::models::Song;
 
-mod title;
 mod search_bar;
+mod title;
 
 #[derive(Clone, Debug)]
 enum Page {
@@ -33,8 +33,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
-        },
-        Msg::FoundSong(_) => { 
+        }
+        Msg::FoundSong(_) => {
             model.search_bar.searching = false;
         }
     }
@@ -49,7 +49,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
-        search_bar::view(&model.search_bar).map_msg(|m| Msg::SearchBar(m)),
+        search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
     ]
 }
 

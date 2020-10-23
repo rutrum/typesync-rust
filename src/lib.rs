@@ -1,6 +1,6 @@
 pub mod models;
 
-pub use models::{Song, SongDifficulty, SongStats, SongRequest};
+pub use models::{Song, SongDifficulty, SongRequest, SongStats};
 
 #[cfg(test)]
 mod tests {

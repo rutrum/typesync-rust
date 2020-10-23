@@ -1,5 +1,5 @@
-use typesync::models::{Song, SongRequest};
 use seed::{prelude::*, *};
+use typesync::models::{Song, SongRequest};
 
 use crate::Msg as SuperMsg;
 
@@ -35,7 +35,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
                 artist: model.artist.clone(),
             };
 
-            orders.skip().perform_cmd( {
+            orders.skip().perform_cmd({
                 async move { SuperMsg::FoundSong(post_song_request(song_request).await) }
             });
         }
@@ -71,14 +71,15 @@ pub fn view(model: &Model) -> Node<Msg> {
 fn title_input() -> Node<Msg> {
     input![
         attrs![
-            At::Type => "text", 
-            At::Name => "title", 
+            At::Type => "text",
+            At::Name => "title",
             At::AutoFocus => "", // causes warning
             At::Placeholder => "Song Title",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();
-            let el = ev.target()
+            let el = ev
+                .target()
                 .unwrap()
                 .unchecked_into::<web_sys::HtmlInputElement>();
             Msg::UpdateTitle(el.value())
@@ -89,13 +90,14 @@ fn title_input() -> Node<Msg> {
 fn artist_input() -> Node<Msg> {
     input![
         attrs![
-            At::Type => "text", 
-            At::Name => "title", 
+            At::Type => "text",
+            At::Name => "title",
             At::Placeholder => "Artist Name",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();
-            let el = ev.target()
+            let el = ev
+                .target()
                 .unwrap()
                 .unchecked_into::<web_sys::HtmlInputElement>();
             Msg::UpdateArtist(el.value())
@@ -107,6 +109,10 @@ fn submit_button(model: &Model) -> Node<Msg> {
     button![
         C!["search-button"],
         attrs![At::Type => "submit"],
-        if model.searching { "Searching..." } else { "Search!" },
+        if model.searching {
+            "Searching..."
+        } else {
+            "Search!"
+        },
     ]
 }

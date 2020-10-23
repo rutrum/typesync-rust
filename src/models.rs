@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Song {
@@ -11,10 +11,19 @@ pub struct Song {
 }
 
 impl Song {
-    pub fn new(title: String, artist: String, raw_lyrics: String, img_url: String, genius_id: String) -> Self {
-
+    pub fn new(
+        title: String,
+        artist: String,
+        raw_lyrics: String,
+        img_url: String,
+        genius_id: String,
+    ) -> Self {
         let stats = SongStats::from_lyrics(&raw_lyrics);
-        let lyrics = vec![raw_lyrics];
+        let lyrics = raw_lyrics
+            .split('\n')
+            .map(|x| x.to_string())
+            .filter(|x| !x.is_empty())
+            .collect(); // clean all the lyrics
 
         Self {
             title,
@@ -39,7 +48,7 @@ pub struct SongStats {
 }
 
 impl SongStats {
-    pub fn from_lyrics(lyrics: &String) -> SongStats {
+    pub fn from_lyrics(lyrics: &str) -> SongStats {
         let mut s = SongStats {
             total: lyrics.len(),
             ..SongStats::default()
@@ -58,24 +67,21 @@ impl SongStats {
                 s.uppercase += 1;
             }
         }
-        
+
         // May need some +1/-1 depending on line endings
-        
+
         s.difficulty = Self::rate(s);
 
         s
     }
 
     fn rate(s: Self) -> SongDifficulty {
-        let score = s.lowercase
-            + s.uppercase * 4
-            + s.numeric * 4
-            + s.whitespace
-            + s.punctuation * 6;
+        let score =
+            s.lowercase + s.uppercase * 4 + s.numeric * 4 + s.whitespace + s.punctuation * 6;
 
         use SongDifficulty::*;
         match score {
-            x if x < 1300 * 1 => Novice,
+            x if x < 1300 => Novice,
             x if x < 1300 * 2 => Apprentice,
             x if x < 1300 * 3 => Adept,
             x if x < 1300 * 4 => Expert,
