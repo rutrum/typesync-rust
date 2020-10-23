@@ -1,42 +1,51 @@
 use seed::{prelude::*, *};
-mod title;
 
+mod title;
+mod search_bar;
+
+#[derive(Clone, Debug)]
 enum Page {
     Home,
 }
 
-struct Model {
+#[derive(Clone, Debug)]
+pub struct Model {
     page: Page,
     color: String,
+    searching: bool,
+    search_bar: search_bar::Model,
 }
 
 fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         page: Page::Home,
         color: "red".to_string(),
+        search_bar: search_bar::Model::default(),
+        searching: false,
     }
 }
 
 pub enum Msg {
-    Click,
+    SearchBar(search_bar::Msg),
+    SearchSong,
 }
 
 fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::Click => {
-            model.color = if model.color == "red" {
-                "blue"
-            } else {
-                "red"
-            }.to_string()
+        Msg::SearchBar(msg) => {
+            search_bar::update(msg, &mut model.search_bar);
         },
+        Msg::SearchSong => {
+            model.searching = true;
+            log!("Search for song: ", model.search_bar);
+        }
     }
 }
 
 fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
-        ev(Ev::Click, |_| Msg::Click), 
+        search_bar::view(model),
     ]
 }
 

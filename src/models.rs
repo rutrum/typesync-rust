@@ -61,3 +61,9 @@ pub enum SongDifficulty {
     Expert,
     Master,
 }
+
+#[derive(Clone, Debug)]
+pub struct SongRequest {
+    pub title: String,
+    pub artist: String,
+}

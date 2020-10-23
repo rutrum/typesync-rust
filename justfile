@@ -7,6 +7,9 @@ build:
 web:
     (cd client; wasm-pack build --target web --out-name package --dev)
 
+watch-web:
+    watchexec -w client/src -- just web
+
 serve: web
     (cd client; microserver)
 

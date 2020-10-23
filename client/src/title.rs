@@ -4,9 +4,6 @@ use crate::Msg;
 pub fn view() -> Node<Msg> {
     div![
         C!["title", "rainbow"],
-        h2![
-            "TYPESYNC",
-            ev(Ev::Click, |_| Msg::Click), 
-        ],
+        h2![ "TYPESYNC", ],
     ]
 }
