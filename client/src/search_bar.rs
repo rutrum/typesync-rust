@@ -8,6 +8,7 @@ use crate::Model as SuperModel;
 pub struct Model {
     pub title: String,
     pub artist: String,
+    pub searching: bool,
 }
 
 pub enum Msg {
@@ -16,20 +17,37 @@ pub enum Msg {
     SearchSong,
 }
 
-pub fn update(msg: Msg, model: &mut Model) {
+pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     use Msg::*;
     match msg {
         UpdateTitle(s) => model.title = s,
         UpdateArtist(s) => model.artist = s,
         SearchSong => {
+            model.searching = true;
             let song_request = SongRequest {
                 title: model.title.clone(),
                 artist: model.artist.clone(),
             };
 
-            // Post the data
+            orders.skip().perform_cmd( {
+                let sr = song_request.clone();
+                async { SuperMsg::FoundSong(post_song_request(sr).await) }
+            });
         }
     }
+}
+
+/// Returns fetch that requests a song from the API.  Currently
+/// tries to parse result as a SongRequest, it will fail.
+async fn post_song_request(song_request: SongRequest) -> fetch::Result<SongRequest> {
+    fetch::Request::new("http://localhost:8080")
+        .method(Method::Post)
+        .json(&song_request)?
+        .fetch()
+        .await?
+        .check_status()?
+        .json()
+        .await
 }
 
 pub fn view(model: &SuperModel) -> Node<SuperMsg> {
@@ -37,10 +55,10 @@ pub fn view(model: &SuperModel) -> Node<SuperMsg> {
         C!["search-box"],
         title_input(),
         artist_input(),
-        submit_button(model),
+        submit_button(&model.search_bar),
         ev(Ev::Submit, |ev| {
             ev.prevent_default();
-            SuperMsg::SearchSong
+            SuperMsg::SearchBar(Msg::SearchSong)
         })
     ]
 }
@@ -80,7 +98,7 @@ fn artist_input() -> Node<SuperMsg> {
     ]
 }
 
-fn submit_button(model: &SuperModel) -> Node<SuperMsg> {
+fn submit_button(model: &Model) -> Node<SuperMsg> {
     button![
         C!["search-button"],
         attrs![At::Type => "submit"],

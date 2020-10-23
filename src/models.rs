@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 #[derive(Clone, Copy, Default, Debug)]
 pub struct SongStats {
     pub total: usize,
@@ -62,7 +64,7 @@ pub enum SongDifficulty {
     Master,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SongRequest {
     pub title: String,
     pub artist: String,

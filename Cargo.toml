@@ -6,3 +6,6 @@ edition = "2018"
 
 [workspace]
 members = ["client", "api"]
+
+[dependencies]
+serde = { version = "1.0.117", features = ["derive"] }

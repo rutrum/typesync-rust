@@ -1,4 +1,5 @@
 use seed::{prelude::*, *};
+use typesync::models::SongRequest;
 
 mod title;
 mod search_bar;
@@ -12,7 +13,6 @@ enum Page {
 pub struct Model {
     page: Page,
     color: String,
-    searching: bool,
     search_bar: search_bar::Model,
 }
 
@@ -21,23 +21,21 @@ fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
         page: Page::Home,
         color: "red".to_string(),
         search_bar: search_bar::Model::default(),
-        searching: false,
     }
 }
 
 pub enum Msg {
     SearchBar(search_bar::Msg),
-    SearchSong,
+    FoundSong(fetch::Result<SongRequest>), //(Song)
 }
 
-fn update(msg: Msg, model: &mut Model, _orders: &mut impl Orders<Msg>) {
+fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::SearchBar(msg) => {
-            search_bar::update(msg, &mut model.search_bar);
+            search_bar::update(msg, &mut model.search_bar, orders);
         },
-        Msg::SearchSong => {
-            model.searching = true;
-            log!("Search for song: ", model.search_bar);
+        Msg::FoundSong(_) => { 
+            model.search_bar.searching = false;
         }
     }
 }
