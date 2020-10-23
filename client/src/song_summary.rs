@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use typesync::Song;
+use typesync::{Lyrics, Song, TestMode};
 
 use crate::Msg;
 
@@ -20,6 +20,8 @@ pub fn view(maybe_song: &Option<Song>) -> Node<Msg> {
                 form![
                     C!["modes"],
                     //ev(Ev::Change, |_| Msg::???)
+                    test_mode_view(TestMode::Standard, &song.tests.standard),
+                    test_mode_view(TestMode::Simple, &song.tests.simple),
                 ],
             ]
         ],
@@ -33,4 +35,17 @@ pub fn view(maybe_song: &Option<Song>) -> Node<Msg> {
             ]
         ],
     }
+}
+
+fn test_mode_view(mode: TestMode, lyrics: &Lyrics) -> Node<Msg> {
+    label![
+        C!["mode"],
+        div![format!("{:?}", mode)],
+        div![format!("{:?}", lyrics.difficulty)],
+        div![
+            C!["stats"],
+            div![format!("{} chars", lyrics.stats.total)],
+            div![format!("Level {} song", lyrics.score)],
+        ],
+    ]
 }

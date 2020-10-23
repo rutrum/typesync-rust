@@ -1,7 +1,7 @@
 mod song;
 mod lyrics;
 
-pub use song::{Song, SongRequest};
+pub use song::{Song, SongRequest, TestMode};
 pub use lyrics::{Lyrics, LyricsDifficulty, LyricsStats};
 
 #[cfg(test)]

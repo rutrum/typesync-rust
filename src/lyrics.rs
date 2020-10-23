@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Lyrics {
-    lyrics: Vec<String>,
-    stats: LyricsStats,
-    score: usize,
-    difficulty: LyricsDifficulty,
+    pub lyrics: Vec<String>,
+    pub stats: LyricsStats,
+    pub score: usize,
+    pub difficulty: LyricsDifficulty,
 }
 
 impl Lyrics {

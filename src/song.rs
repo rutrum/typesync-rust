@@ -8,6 +8,12 @@ pub struct SongRequest {
     pub artist: String,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub enum TestMode {
+    Simple,
+    Standard,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Song {
     pub title: String,
@@ -19,8 +25,8 @@ pub struct Song {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tests {
-    simple: Lyrics,
-    standard: Lyrics,
+    pub simple: Lyrics,
+    pub standard: Lyrics,
 }
 
 impl Song {
