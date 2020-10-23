@@ -1,6 +1,9 @@
 test:
     cargo test --all
 
+watch-test:
+    watchexec -- just test
+
 build:
     cargo build --all
 
@@ -15,3 +18,9 @@ serve: web
 
 tree:
     tree -I "pkg|target" --dirsfirst
+
+api:
+    cargo run -p api
+
+watch-api:
+    watchexec -w api/src --force-poll 500 -- just api

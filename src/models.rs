@@ -6,9 +6,25 @@ pub struct Song {
     pub artist: String,
     pub lyrics: Vec<String>,
     pub stats: SongStats,
-    pub difficulty: SongDifficulty,
     pub img_url: String,
     pub genius_id: String,
+}
+
+impl Song {
+    pub fn new(title: String, artist: String, raw_lyrics: String, img_url: String, genius_id: String) -> Self {
+
+        let stats = SongStats::from_lyrics(&raw_lyrics);
+        let lyrics = vec![raw_lyrics];
+
+        Self {
+            title,
+            artist,
+            lyrics,
+            stats,
+            img_url,
+            genius_id,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Default, Debug, Serialize, Deserialize)]
@@ -19,10 +35,11 @@ pub struct SongStats {
     pub numeric: usize,
     pub whitespace: usize,
     pub punctuation: usize,
+    pub difficulty: SongDifficulty,
 }
 
 impl SongStats {
-    pub fn from_lyrics(lyrics: String) -> SongStats {
+    pub fn from_lyrics(lyrics: &String) -> SongStats {
         let mut s = SongStats {
             total: lyrics.len(),
             ..SongStats::default()
@@ -43,16 +60,18 @@ impl SongStats {
         }
         
         // May need some +1/-1 depending on line endings
+        
+        s.difficulty = Self::rate(s);
 
         s
     }
 
-    pub fn rate(&self) -> SongDifficulty {
-        let score = self.lowercase
-            + self.uppercase * 4
-            + self.numeric * 4
-            + self.whitespace
-            + self.punctuation * 6;
+    fn rate(s: Self) -> SongDifficulty {
+        let score = s.lowercase
+            + s.uppercase * 4
+            + s.numeric * 4
+            + s.whitespace
+            + s.punctuation * 6;
 
         use SongDifficulty::*;
         match score {
@@ -73,6 +92,12 @@ pub enum SongDifficulty {
     Adept,
     Expert,
     Master,
+}
+
+impl std::default::Default for SongDifficulty {
+    fn default() -> Self {
+        SongDifficulty::Novice
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
