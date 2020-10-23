@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use typesync::models::{Song, SongRequest};
+use typesync::{Song, SongRequest};
 
 use crate::Msg as SuperMsg;
 
@@ -35,8 +35,11 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
                 artist: model.artist.clone(),
             };
 
-            orders.skip().perform_cmd({
-                async move { SuperMsg::FoundSong(post_song_request(song_request).await) }
+            // don't skip to allow search to refresh
+            orders.perform_cmd({
+                async move { SuperMsg::FoundSong(
+                    post_song_request(song_request).await.ok().flatten()
+                )}
             });
         }
     }
@@ -44,7 +47,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 
 /// Returns fetch that requests a song from the API.  Currently
 /// tries to parse result as a SongRequest, it will fail.
-async fn post_song_request(song_request: SongRequest) -> fetch::Result<Song> {
+async fn post_song_request(song_request: SongRequest) -> fetch::Result<Option<Song>> {
     fetch::Request::new("http://localhost:8000/lyrics")
         .method(Method::Post)
         .json(&song_request)?

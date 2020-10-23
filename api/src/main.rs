@@ -8,13 +8,16 @@ extern crate rocket_cors;
 use typesync::{SongRequest, Song};
 
 use rocket_contrib::json::Json;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Error};
+use rocket_cors::{AllowedOrigins, Error};
 
 #[post("/lyrics", data = "<request>")]
 fn song_request(request: Json<SongRequest>) -> Json<Option<Song>> {
     let sr = request.into_inner();
-    println!("Requesting \"{}\" by {}", sr.title, sr.artist);
+    println!("Searching \"{}\" by {}", sr.title, sr.artist);
     let response = api::search_song_on_genius(sr);
+    if let Ok(song) = &response {
+        println!("Found \"{}\" by {}", song.title, song.artist);
+    }
     Json(response.ok())
 }
 

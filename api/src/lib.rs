@@ -53,7 +53,6 @@ fn scrape_for_lyrics(raw: String) -> Option<String> {
 fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
     let client = reqwest::blocking::Client::new();
     let url = Url::parse(&format!("https://genius.com{}", route)).unwrap();
-    println!("{:?}", url);
     client
         .get(url)
         .bearer_auth("rk7Bf0CVL9lOWaEaxZnrOTIiAp2qXwMaKfJfWd3XPoLGGxAgJWz1zl1dwwgoCz17")

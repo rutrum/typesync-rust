@@ -1,18 +1,21 @@
 use seed::{prelude::*, *};
-use typesync::models::Song;
+use typesync::Song;
 
 mod search_bar;
+mod song_summary;
 mod title;
 
 #[derive(Clone, Debug)]
 enum Page {
     Home,
+    Discovery,
 }
 
 #[derive(Clone, Debug)]
 pub struct Model {
     page: Page,
     color: String,
+    song: Option<Song>,
     search_bar: search_bar::Model,
 }
 
@@ -20,13 +23,14 @@ fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         page: Page::Home,
         color: "red".to_string(),
+        song: None,
         search_bar: search_bar::init(),
     }
 }
 
 pub enum Msg {
     SearchBar(search_bar::Msg),
-    FoundSong(fetch::Result<Song>),
+    FoundSong(Option<Song>),
 }
 
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -34,8 +38,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
         }
-        Msg::FoundSong(_) => {
+        Msg::FoundSong(maybe) => {
             model.search_bar.searching = false;
+            model.song = maybe;
+            model.page = Page::Discovery;
         }
     }
 }
@@ -49,7 +55,15 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
-        search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
+        match model.page {
+            Page::Home => div![ 
+                search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
+            ],
+            Page::Discovery => div![
+                search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
+                song_summary::view(&model.song),
+            ],
+        }
     ]
 }
 
