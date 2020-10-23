@@ -56,9 +56,7 @@ fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
         match model.page {
-            Page::Home => div![ 
-                search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
-            ],
+            Page::Home => div![search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),],
             Page::Discovery => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
                 song_summary::view(&model.song),

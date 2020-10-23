@@ -1,6 +1,8 @@
-pub mod models;
+mod song;
+mod lyrics;
 
-pub use models::{Song, SongDifficulty, SongRequest, SongStats};
+pub use song::{Song, SongRequest};
+pub use lyrics::{Lyrics, LyricsDifficulty, LyricsStats};
 
 #[cfg(test)]
 mod tests {

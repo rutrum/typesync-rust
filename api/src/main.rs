@@ -5,7 +5,7 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate rocket_cors;
 
-use typesync::{SongRequest, Song};
+use typesync::{Song, SongRequest};
 
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};

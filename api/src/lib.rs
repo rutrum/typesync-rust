@@ -28,12 +28,12 @@ pub enum GeniusError {
 
 pub fn search_song_on_genius(sr: SongRequest) -> Result<Song, GeniusError> {
     use GeniusError::*;
-    
+
     let text = query_genius_search(sr.title, sr.artist).map_err(|_| ApiFetch)?;
     let song_scrape = json_to_song(text).ok_or(ApiScrape)?;
     let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
     let raw_lyrics = scrape_for_lyrics(raw_html).ok_or(WebScrape)?;
-    
+
     Ok(Song::new(
         song_scrape.title,
         song_scrape.artist,
