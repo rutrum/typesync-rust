@@ -43,7 +43,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
-        search_bar::view(model),
+        search_bar::view(&model.search_bar).map_msg(|m| Msg::SearchBar(m)),
     ]
 }
 

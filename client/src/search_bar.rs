@@ -2,7 +2,6 @@ use typesync::models::SongRequest;
 use seed::{prelude::*, *};
 
 use crate::Msg as SuperMsg;
-use crate::Model as SuperModel;
 
 #[derive(Clone, Default, Debug)]
 pub struct Model {
@@ -30,8 +29,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
             };
 
             orders.skip().perform_cmd( {
-                let sr = song_request.clone();
-                async { SuperMsg::FoundSong(post_song_request(sr).await) }
+                async move { SuperMsg::FoundSong(post_song_request(song_request).await) }
             });
         }
     }
@@ -50,55 +48,55 @@ async fn post_song_request(song_request: SongRequest) -> fetch::Result<SongReque
         .await
 }
 
-pub fn view(model: &SuperModel) -> Node<SuperMsg> {
+pub fn view(model: &Model) -> Node<Msg> {
     form![
         C!["search-box"],
         title_input(),
         artist_input(),
-        submit_button(&model.search_bar),
+        submit_button(model),
         ev(Ev::Submit, |ev| {
             ev.prevent_default();
-            SuperMsg::SearchBar(Msg::SearchSong)
+            Msg::SearchSong
         })
     ]
 }
 
-fn title_input() -> Node<SuperMsg> {
+fn title_input() -> Node<Msg> {
     input![
-        id!["song-box"],
         attrs![
             At::Type => "text", 
             At::Name => "title", 
-            At::AutoFocus => "",
+            At::AutoFocus => "", // causes warning
             At::Placeholder => "Song Title",
         ],
         ev(Ev::Change, |ev| {
+            ev.prevent_default();
             let el = ev.target()
                 .unwrap()
                 .unchecked_into::<web_sys::HtmlInputElement>();
-            SuperMsg::SearchBar(Msg::UpdateTitle(el.value()))
+            Msg::UpdateTitle(el.value())
         }),
     ]
 }
 
-fn artist_input() -> Node<SuperMsg> {
+fn artist_input() -> Node<Msg> {
     input![
-        id!["song-box"],
         attrs![
             At::Type => "text", 
             At::Name => "title", 
             At::Placeholder => "Artist Name",
         ],
         ev(Ev::Change, |ev| {
+            ev.prevent_default();
             let el = ev.target()
                 .unwrap()
                 .unchecked_into::<web_sys::HtmlInputElement>();
-            SuperMsg::SearchBar(Msg::UpdateArtist(el.value()))
+            Msg::UpdateArtist(el.value())
         }),
     ]
 }
 
-fn submit_button(model: &Model) -> Node<SuperMsg> {
+fn submit_button(model: &Model) -> Node<Msg> {
     button![
         C!["search-button"],
         attrs![At::Type => "submit"],
