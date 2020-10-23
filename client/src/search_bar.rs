@@ -45,7 +45,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 /// Returns fetch that requests a song from the API.  Currently
 /// tries to parse result as a SongRequest, it will fail.
 async fn post_song_request(song_request: SongRequest) -> fetch::Result<Song> {
-    fetch::Request::new("http://localhost:8080")
+    fetch::Request::new("http://localhost:8000/lyrics")
         .method(Method::Post)
         .json(&song_request)?
         .fetch()

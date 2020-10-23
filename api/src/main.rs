@@ -21,8 +21,8 @@ fn song_request(request: Json<SongRequest>) -> Json<Option<Song>> {
 fn main() -> Result<(), Error> {
     let cors = rocket_cors::CorsOptions {
         allowed_origins: AllowedOrigins::all(),
-        allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
-        allow_credentials: true,
+        //allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
+        //allow_credentials: true,
         ..Default::default()
     }
     .to_cors()?;
