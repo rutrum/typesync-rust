@@ -1,13 +1,20 @@
-use typesync::models::SongRequest;
+use typesync::models::{Song, SongRequest};
 use seed::{prelude::*, *};
 
 use crate::Msg as SuperMsg;
 
 #[derive(Clone, Default, Debug)]
 pub struct Model {
-    pub title: String,
-    pub artist: String,
+    title: String,
+    artist: String,
     pub searching: bool,
+}
+
+pub fn init() -> Model {
+    Model {
+        searching: false,
+        ..Default::default()
+    }
 }
 
 pub enum Msg {
@@ -37,7 +44,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 
 /// Returns fetch that requests a song from the API.  Currently
 /// tries to parse result as a SongRequest, it will fail.
-async fn post_song_request(song_request: SongRequest) -> fetch::Result<SongRequest> {
+async fn post_song_request(song_request: SongRequest) -> fetch::Result<Song> {
     fetch::Request::new("http://localhost:8080")
         .method(Method::Post)
         .json(&song_request)?

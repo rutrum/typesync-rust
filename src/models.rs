@@ -1,6 +1,17 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Copy, Default, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Song {
+    pub title: String,
+    pub artist: String,
+    pub lyrics: Vec<String>,
+    pub stats: SongStats,
+    pub difficulty: SongDifficulty,
+    pub img_url: String,
+    pub genius_id: String,
+}
+
+#[derive(Clone, Copy, Default, Debug, Serialize, Deserialize)]
 pub struct SongStats {
     pub total: usize,
     pub uppercase: usize,
@@ -55,7 +66,7 @@ impl SongStats {
 }
 
 /// Labeled after difficulties in Skyrim.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum SongDifficulty {
     Novice,
     Apprentice,
