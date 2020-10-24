@@ -11,3 +11,4 @@ crate-type = ["cdylib"]
 typesync = { path = ".." }
 seed = "^0.7.0"
 wasm-bindgen = "^0.2.68"
+web-sys = "0.3.45"

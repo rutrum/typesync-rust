@@ -56,4 +56,12 @@ impl Song {
             genius_id,
         }
     }
+
+    pub fn lyrics(&self, mode: TestMode) -> &Lyrics {
+        use TestMode::*;
+        match mode {
+            Simple => &self.tests.simple,
+            Standard => &self.tests.standard,
+        }
+    }
 }

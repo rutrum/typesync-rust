@@ -21,7 +21,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     use Msg::*;
     match msg {
         UpdateMode(mode) => model.mode = Some(mode),
-        StartTest => { orders.send_msg(SuperMsg::StartTest); },
+        StartTest => { orders.send_msg(SuperMsg::StartTest(model.mode.expect("No mode selected"))); },
     };
 }
 
