@@ -1,4 +1,5 @@
 use seed::{prelude::*, *};
+use std::time::Duration;
 use typesync::{Song, TestMode};
 
 mod finished;
@@ -43,7 +44,7 @@ pub enum Msg {
     SongSummary(song_summary::Msg),
     StartTest(TestMode),
     TypingTest(typing_test::Msg),
-    TestDone,
+    TestDone(Duration, f32),
     Finished(finished::Msg),
     ToDiscovery,
 }
@@ -65,8 +66,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             song_summary::update(msg, &mut model.song_summary, orders);
         }
         Msg::StartTest(mode) => {
-            model.page = Page::Test(typing_test::init(model));
             model.mode = mode;
+            log!(mode);
+            model.page = Page::Test(typing_test::init(model));
         }
         Msg::TypingTest(msg) => {
             // event does nothing if page is not test
@@ -74,8 +76,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 typing_test::update(msg, typing_test_model, orders);
             }
         }
-        Msg::TestDone => {
-            model.page = Page::FinishedTest(finished::init());
+        Msg::TestDone(time, wpm) => {
+            model.page = Page::FinishedTest(finished::init(time, wpm));
         }
         Msg::Finished(msg) => {
             if let Page::FinishedTest(finished_model) = &mut model.page {
@@ -83,7 +85,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             }
         }
         Msg::ToDiscovery => {
-            log!("back to song page");
             model.page = Page::Discovery;
         }
     }

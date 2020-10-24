@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use unicode_normalization::UnicodeNormalization;
 
 use crate::lyrics::*;
 
@@ -8,7 +9,7 @@ pub struct SongRequest {
     pub artist: String,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum TestMode {
     Simple,
     Standard,
@@ -37,16 +38,11 @@ impl Song {
         img_url: String,
         genius_id: String,
     ) -> Self {
-        let lyrics: Vec<String> = raw_lyrics
-            .split('\n')
-            .filter(|x| !x.is_empty())
-			.filter(|x| !(x.starts_with("[") && x.ends_with("]")))
-            .map(|x| x.to_string())
-            .collect(); 
+        let cleaned = clean(raw_lyrics);
 
         let tests = Tests {
-            simple: Lyrics::new(lyrics.clone()),
-            standard: Lyrics::new(lyrics),
+            simple: to_simple(cleaned.clone()),
+            standard: to_standard(cleaned),
         };
 
         Self {
@@ -65,4 +61,32 @@ impl Song {
             Standard => &self.tests.standard,
         }
     }
+}
+
+fn to_simple(cleaned: Vec<String>) -> Lyrics {
+    let simple = cleaned
+        .iter()
+        .map(|x| {
+            x.to_lowercase()
+                .chars()
+                .filter(|&x| !x.is_ascii_punctuation())
+                .collect()
+        })
+        .collect();
+    Lyrics::new(simple)
+}
+
+fn to_standard(cleaned: Vec<String>) -> Lyrics {
+    Lyrics::new(cleaned)
+}
+
+fn clean(raw: String) -> Vec<String> {
+    let ascii = raw.nfkd().filter(|x| x.is_ascii()).collect::<String>();
+
+    ascii
+        .split("\n")
+        .filter(|x| !x.is_empty())
+        .filter(|x| !(x.starts_with("[") && x.ends_with("]")))
+        .map(|x| x.to_string())
+        .collect()
 }
