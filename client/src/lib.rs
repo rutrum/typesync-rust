@@ -9,6 +9,7 @@ mod title;
 enum Page {
     Home,
     Discovery,
+    Test,
 }
 
 #[derive(Clone, Debug)]
@@ -17,6 +18,7 @@ pub struct Model {
     color: String,
     song: Option<Song>,
     search_bar: search_bar::Model,
+    song_summary: song_summary::Model,
 }
 
 fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
@@ -25,16 +27,23 @@ fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
         color: "red".to_string(),
         song: None,
         search_bar: search_bar::init(),
+        song_summary: song_summary::init(),
     }
 }
 
 pub enum Msg {
+    GoHome,
     SearchBar(search_bar::Msg),
     FoundSong(Option<Song>),
+    SongSummary(song_summary::Msg),
+    StartTest,
 }
 
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
+        Msg::GoHome => {
+            model.page = Page::Home;
+        }
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
         }
@@ -42,6 +51,12 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             model.search_bar.searching = false;
             model.song = maybe;
             model.page = Page::Discovery;
+        }
+        Msg::SongSummary(msg) => {
+            song_summary::update(msg, &mut model.song_summary, orders);
+        }
+        Msg::StartTest => {
+            model.page = Page::Test;
         }
     }
 }
@@ -59,8 +74,11 @@ fn view(model: &Model) -> Node<Msg> {
             Page::Home => div![search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),],
             Page::Discovery => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
-                song_summary::view(&model.song),
+                song_summary::view(&model.song).map_msg(Msg::SongSummary),
             ],
+            Page::Test => div![
+
+            ]
         }
     ]
 }
