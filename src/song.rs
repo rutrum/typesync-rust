@@ -84,9 +84,9 @@ fn clean(raw: String) -> Vec<String> {
     let ascii = raw.nfkd().filter(|x| x.is_ascii()).collect::<String>();
 
     ascii
-        .split("\n")
+        .split('\n')
         .filter(|x| !x.is_empty())
-        .filter(|x| !(x.starts_with("[") && x.ends_with("]")))
+        .filter(|x| !(x.starts_with('[') && x.ends_with(']')))
         .map(|x| x.to_string())
         .collect()
 }
