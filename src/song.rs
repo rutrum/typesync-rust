@@ -39,9 +39,10 @@ impl Song {
     ) -> Self {
         let lyrics: Vec<String> = raw_lyrics
             .split('\n')
-            .map(|x| x.to_string())
             .filter(|x| !x.is_empty())
-            .collect(); // clean all the lyrics
+			.filter(|x| !(x.starts_with("[") && x.ends_with("]")))
+            .map(|x| x.to_string())
+            .collect(); 
 
         let tests = Tests {
             simple: Lyrics::new(lyrics.clone()),

@@ -58,7 +58,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     }
 }
 
-pub fn view(model: &Model, _supermodel: &SuperModel) -> Node<Msg> {
+pub fn view(model: &Model) -> Node<Msg> {
     let mut iter = model.lyrics.iter();
     let top = iter.next();
     let bottom = iter.next();

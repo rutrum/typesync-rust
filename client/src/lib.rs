@@ -1,6 +1,7 @@
 use seed::{prelude::*, *};
 use typesync::{Song, TestMode};
 
+mod finished;
 mod search_bar;
 mod song_summary;
 mod title;
@@ -11,7 +12,7 @@ enum Page {
     Home,
     Discovery,
     Test(typing_test::Model),
-    TestDone,
+    FinishedTest(finished::Model),
 }
 
 #[derive(Clone, Debug)]
@@ -43,6 +44,8 @@ pub enum Msg {
     StartTest(TestMode),
     TypingTest(typing_test::Msg),
     TestDone,
+    Finished(finished::Msg),
+    ToDiscovery,
 }
 
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
@@ -72,7 +75,16 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             }
         }
         Msg::TestDone => {
-            model.page = Page::TestDone;
+            model.page = Page::FinishedTest(finished::init());
+        }
+        Msg::Finished(msg) => {
+            if let Page::FinishedTest(finished_model) = &mut model.page {
+                finished::update(msg, finished_model, orders);
+            }
+        }
+        Msg::ToDiscovery => {
+            log!("back to song page");
+            model.page = Page::Discovery;
         }
     }
 }
@@ -93,8 +105,9 @@ fn view(model: &Model) -> Node<Msg> {
                 song_summary::view(&model.song).map_msg(Msg::SongSummary),
             ],
             Page::Test(typing_test_model) =>
-                div![typing_test::view(&typing_test_model, &model).map_msg(Msg::TypingTest),],
-            Page::TestDone => div!["You did it!"],
+                div![typing_test::view(&typing_test_model).map_msg(Msg::TypingTest),],
+            Page::FinishedTest(finished_model) =>
+                div![finished::view(&finished_model).map_msg(Msg::Finished)],
         }
     ]
 }

@@ -24,3 +24,6 @@ api:
 
 watch-api:
     watchexec -w api/src --force-poll 500 -- just api
+
+fmt:
+    cargo fmt
