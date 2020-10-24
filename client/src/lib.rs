@@ -3,8 +3,8 @@ use typesync::{Song, TestMode};
 
 mod search_bar;
 mod song_summary;
-mod typing_test;
 mod title;
+mod typing_test;
 
 #[derive(Clone, Debug)]
 enum Page {
@@ -92,12 +92,9 @@ fn view(model: &Model) -> Node<Msg> {
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
                 song_summary::view(&model.song).map_msg(Msg::SongSummary),
             ],
-            Page::Test(typing_test_model) => div![
-                typing_test::view(&typing_test_model, &model).map_msg(Msg::TypingTest),
-            ],
-            Page::TestDone => div![
-                "You did it!"
-            ],
+            Page::Test(typing_test_model) =>
+                div![typing_test::view(&typing_test_model, &model).map_msg(Msg::TypingTest),],
+            Page::TestDone => div!["You did it!"],
         }
     ]
 }
