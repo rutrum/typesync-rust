@@ -15,7 +15,7 @@ pub enum TestMode {
     Standard,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Song {
     pub title: String,
     pub artist: String,
@@ -24,7 +24,7 @@ pub struct Song {
     pub tests: Tests,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Tests {
     pub simple: Lyrics,
     pub standard: Lyrics,

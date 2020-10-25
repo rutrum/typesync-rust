@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Lyrics {
     pub lyrics: Vec<String>,
     pub stats: LyricsStats,
@@ -88,5 +88,12 @@ impl LyricsDifficulty {
             x if x < 1300 * 4 => Expert,
             _ => Master,
         }
+    }
+}
+
+// Ultimately so I can use take
+impl std::default::Default for LyricsDifficulty {
+    fn default() -> Self {
+        LyricsDifficulty::Novice
     }
 }

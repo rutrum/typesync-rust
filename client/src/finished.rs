@@ -36,15 +36,17 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     match msg {
         UpdateName(s) => model.name = s,
         Submit => {
+            let name = std::mem::take(&mut model.name);
+
             let score = ScoreRecord {
-                name: model.name.clone(),
+                name,
                 genius_id: model.song.genius_id.clone(),
                 milliseconds: model.time.as_millis(),
                 absolute_time: 0, //Utc::now().timestamp(),
                 mode: model.mode,
             };
             orders.send_msg(SuperMsg::ChangePage(Page::Summary(song_summary::init(
-                Some(model.song.clone()),
+                Some(std::mem::take(&mut model.song)),
             ))));
         }
     }

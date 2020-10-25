@@ -1,5 +1,6 @@
 use seed::{prelude::*, *};
 use typesync::{Lyrics, Song, TestMode};
+use web_sys::Event;
 
 use crate::Msg as SuperMsg;
 
@@ -26,11 +27,16 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     match msg {
         UpdateMode(mode) => model.mode = Some(mode),
         StartTest => {
-            if let (Some(mode), Some(song)) = (model.mode, model.song.clone()) {
+            if let (Some(mode), Some(song)) = (model.mode, model.song.take()) {
                 orders.send_msg(SuperMsg::StartTest(song, mode));
             }
         }
     };
+}
+
+fn start_test(ev: Event) -> Msg {
+    ev.prevent_default();
+    Msg::StartTest
 }
 
 pub fn view(model: &Model) -> Node<Msg> {
@@ -51,7 +57,7 @@ pub fn view(model: &Model) -> Node<Msg> {
                     C!["modes"],
                     test_mode_view(TestMode::Standard, &song.tests.standard),
                     test_mode_view(TestMode::Simple, &song.tests.simple),
-                    button![ev(Ev::Click, |_| Msg::StartTest), "Start!"]
+                    button![ev(Ev::Click, |ev| start_test(ev)), "Start!"]
                 ],
             ]
         ],
