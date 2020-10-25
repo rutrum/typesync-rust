@@ -9,66 +9,56 @@ mod title;
 mod typing_test;
 
 #[derive(Clone, Debug)]
-enum Page {
+pub enum Page {
     Home,
-    Discovery,
+    Summary(song_summary::Model),
     Test(typing_test::Model),
-    FinishedTest(finished::Model),
+    Finish(finished::Model),
 }
 
 #[derive(Clone, Debug)]
 pub struct Model {
     page: Page,
-    color: String,
-    song: Option<Song>,
-    mode: TestMode,
     search_bar: search_bar::Model,
-    song_summary: song_summary::Model,
 }
 
 fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
     Model {
         page: Page::Home,
-        color: "red".to_string(),
-        song: None,
-        mode: TestMode::Standard,
         search_bar: search_bar::init(),
-        song_summary: song_summary::init(),
     }
 }
 
 pub enum Msg {
-    GoHome,
+    ChangePage(Page),
     SearchBar(search_bar::Msg),
     FoundSong(Option<Song>),
-    SongSummary(song_summary::Msg),
-    StartTest(TestMode),
+    Summary(song_summary::Msg),
+    StartTest(Song, TestMode),
     TypingTest(typing_test::Msg),
-    TestDone(Duration, f32),
+    TestDone(Song, TestMode, Duration, f32),
     Finished(finished::Msg),
-    ToDiscovery,
 }
 
+/// Todo: rewrite all these stuff so there really aren't options in
+/// global state.  If it's optional, just pass it between models through
+/// the page changing Msg variants
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
-        Msg::GoHome => {
-            model.page = Page::Home;
-        }
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
         }
-        Msg::FoundSong(maybe) => {
+        Msg::FoundSong(song) => {
             model.search_bar.searching = false;
-            model.song = maybe;
-            model.page = Page::Discovery;
+            model.page = Page::Summary(song_summary::init(song));
         }
-        Msg::SongSummary(msg) => {
-            song_summary::update(msg, &mut model.song_summary, orders);
+        Msg::Summary(msg) => {
+            if let Page::Summary(summary_model) = &mut model.page {
+                song_summary::update(msg, summary_model, orders);
+            }
         }
-        Msg::StartTest(mode) => {
-            model.mode = mode;
-            log!(mode);
-            model.page = Page::Test(typing_test::init(model));
+        Msg::StartTest(song, mode) => {
+            model.page = Page::Test(typing_test::init(song, mode));
         }
         Msg::TypingTest(msg) => {
             // event does nothing if page is not test
@@ -76,17 +66,15 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 typing_test::update(msg, typing_test_model, orders);
             }
         }
-        Msg::TestDone(time, wpm) => {
-            model.page = Page::FinishedTest(finished::init(time, wpm));
+        Msg::TestDone(song, mode, time, wpm) => {
+            model.page = Page::Finish(finished::init(time, wpm, song, mode));
         }
         Msg::Finished(msg) => {
-            if let Page::FinishedTest(finished_model) = &mut model.page {
+            if let Page::Finish(finished_model) = &mut model.page {
                 finished::update(msg, finished_model, orders);
             }
         }
-        Msg::ToDiscovery => {
-            model.page = Page::Discovery;
-        }
+        Msg::ChangePage(page) => model.page = page,
     }
 }
 
@@ -101,13 +89,13 @@ fn view(model: &Model) -> Node<Msg> {
         title::view(),
         match &model.page {
             Page::Home => div![search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),],
-            Page::Discovery => div![
+            Page::Summary(summary_model) => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
-                song_summary::view(&model.song).map_msg(Msg::SongSummary),
+                song_summary::view(summary_model).map_msg(Msg::Summary),
             ],
             Page::Test(typing_test_model) =>
                 div![typing_test::view(&typing_test_model).map_msg(Msg::TypingTest),],
-            Page::FinishedTest(finished_model) =>
+            Page::Finish(finished_model) =>
                 div![finished::view(&finished_model).map_msg(Msg::Finished)],
         }
     ]

@@ -3,13 +3,17 @@ use typesync::{Lyrics, Song, TestMode};
 
 use crate::Msg as SuperMsg;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Model {
     mode: Option<TestMode>,
+    song: Option<Song>,
 }
 
-pub fn init() -> Model {
-    Default::default()
+pub fn init(song: Option<Song>) -> Model {
+    Model {
+        song,
+        ..Default::default()
+    }
 }
 
 pub enum Msg {
@@ -22,13 +26,15 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     match msg {
         UpdateMode(mode) => model.mode = Some(mode),
         StartTest => {
-            orders.send_msg(SuperMsg::StartTest(model.mode.expect("No mode selected")));
+            if let (Some(mode), Some(song)) = (model.mode, model.song.clone()) {
+                orders.send_msg(SuperMsg::StartTest(song, mode));
+            }
         }
     };
 }
 
-pub fn view(maybe_song: &Option<Song>) -> Node<Msg> {
-    match maybe_song {
+pub fn view(model: &Model) -> Node<Msg> {
+    match &model.song {
         Some(song) => div![
             C!["song-summary"],
             img![
@@ -43,10 +49,9 @@ pub fn view(maybe_song: &Option<Song>) -> Node<Msg> {
                 ],
                 form![
                     C!["modes"],
-                    //ev(Ev::Change, |_| Msg::???)
                     test_mode_view(TestMode::Standard, &song.tests.standard),
                     test_mode_view(TestMode::Simple, &song.tests.simple),
-                    div![ev(Ev::Click, |_| Msg::StartTest), "Start!"]
+                    button![ev(Ev::Click, |_| Msg::StartTest), "Start!"]
                 ],
             ]
         ],

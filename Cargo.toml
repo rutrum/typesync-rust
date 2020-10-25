@@ -10,4 +10,3 @@ members = ["client", "api"]
 [dependencies]
 serde = { version = "1.0.117", features = ["derive"] }
 unicode-normalization = "0.1.13"
-chrono = "0.4"
