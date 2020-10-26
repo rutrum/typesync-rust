@@ -23,3 +23,5 @@ This should be done only after completing the above, as it will be equivalent or
 - [ ] Add most popular songs to home page
 - [ ] Add timed mode (how much of a song can you type in 1 minute)
 - [ ] Add a bit more UX, many people don't know what the website done on entry (perhaps a message board for new ips?)
+- [ ] Routing, that is, the song summary of id 2 should be typesync.tech/song/2
+- [ ] A comprehensive leaderboard page, possibly with statistics and graphs
