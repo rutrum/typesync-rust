@@ -1,6 +1,6 @@
 use seed::{prelude::*, *};
 use std::time::Duration;
-use typesync::{Song, TestMode};
+use typesync::{Leaderboards, Song, TestMode};
 
 mod finished;
 mod search_bar;
@@ -38,6 +38,7 @@ pub enum Msg {
     TypingTest(typing_test::Msg),
     TestDone(Song, TestMode, Duration, f32),
     Finished(finished::Msg),
+    SubmitScores(Song),
 }
 
 /// Todo: rewrite all these stuff so there really aren't options in
@@ -48,9 +49,19 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
         }
-        Msg::FoundSong(song) => {
+        Msg::FoundSong(maybe_song) => {
             model.search_bar.searching = false;
-            model.page = Page::Summary(song_summary::init(song));
+            if let Some(song) = maybe_song.as_ref() {
+                let genius_id = song.genius_id.clone();
+                log!("Found ", genius_id);
+                orders.perform_cmd({
+                    async move {
+                        let l = get_leaderboards(&genius_id).await.unwrap_or_default();
+                        Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
+                    }
+                });
+            }
+            model.page = Page::Summary(song_summary::init(maybe_song));
         }
         Msg::Summary(msg) => {
             if let Page::Summary(summary_model) = &mut model.page {
@@ -74,8 +85,26 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 finished::update(msg, finished_model, orders);
             }
         }
+        Msg::SubmitScores(song) => {
+            let genius_id = song.genius_id.clone();
+            orders.perform_cmd({
+                async move {
+                    let l = get_leaderboards(&genius_id).await.unwrap_or_default();
+                    Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
+                }
+            });
+            model.page = Page::Summary(song_summary::init(Some(song)));
+        }
         Msg::ChangePage(page) => model.page = page,
     }
+}
+
+async fn get_leaderboards(genius_id: &String) -> fetch::Result<Leaderboards> {
+    fetch::Request::new(format!("http://localhost:8000/leaderboards/{}", genius_id))
+        .fetch()
+        .await?
+        .json()
+        .await
 }
 
 // Idea: When matching on the page to determine

@@ -29,7 +29,6 @@ pub struct Song {
     pub img_url: String,
     pub genius_id: String,
     pub tests: Tests,
-    pub leaderboards: Leaderboards,
 }
 
 impl Song {
@@ -39,7 +38,6 @@ impl Song {
         raw_lyrics: String,
         img_url: String,
         genius_id: String,
-        leaderboards: Leaderboards,
     ) -> Self {
         let cleaned = clean(raw_lyrics);
 
@@ -54,7 +52,6 @@ impl Song {
             tests,
             img_url,
             genius_id,
-            leaderboards,
         }
     }
 

@@ -12,8 +12,6 @@ pub struct Model {
 
 pub fn init() -> Model {
     Model {
-        //title: String::from("you suffer"),
-        //artist: String::from("napalm death"),
         searching: false,
         ..Default::default()
     }

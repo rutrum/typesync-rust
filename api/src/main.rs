@@ -10,7 +10,7 @@ use rocket::http::Status;
 use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
-use typesync::{NewScoreRecord, ScoreRecord, Song, SongRequest};
+use typesync::{Leaderboards, NewScoreRecord, ScoreRecord, Song, SongRequest};
 
 use api::db;
 use api::genius;
@@ -30,18 +30,20 @@ fn save_score(conn: DbPool, record: Json<NewScoreRecord>) -> Status {
 fn song_request(conn: DbPool, request: Json<SongRequest>) -> Json<Option<Song>> {
     let sr = request.into_inner();
     println!("Searching \"{}\" by {}", sr.title, sr.artist);
-    let metadata = genius::search_song_on_genius(sr);
+    let song = genius::search_song_on_genius(sr);
 
-    match metadata {
+    match song {
         Err(_) => Json(None),
-        Ok(metadata) => {
-            println!("Found \"{}\" by {}", metadata.title, metadata.artist);
-            let leaderboards =
-                db::get_leaderboards(conn, &metadata.genius_id).unwrap_or_default();
-            let song = metadata.into_song(leaderboards);
+        Ok(song) => {
+            println!("Found \"{}\" by {}", song.title, song.artist);
             Json(Some(song))
         }
     }
+}
+
+#[get("/leaderboards/<genius_id>")]
+fn fetch_leaderboards(conn: DbPool, genius_id: String) -> Json<Option<Leaderboards>> {
+    Json(db::get_leaderboards(conn, &genius_id).ok())
 }
 
 fn main() -> Result<(), Error> {
@@ -52,7 +54,7 @@ fn main() -> Result<(), Error> {
     .to_cors()?;
 
     rocket::ignite()
-        .mount("/", routes![song_request, save_score])
+        .mount("/", routes![song_request, save_score, fetch_leaderboards])
         .attach(cors)
         .attach(DbPool::fairing())
         .launch();

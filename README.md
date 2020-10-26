@@ -8,7 +8,7 @@ There are still features in the original version of the site that need to be rew
 
 - [ ] Use MySQL and not Sqlite3
 - [ ] Cache (artist, title) searches
-- [ ] Make the song data and the leaderboard data distinct API calls
+- [x] Make the song data and the leaderboard data distinct API calls
 - [ ] Add styling, make it look pretty, format leaderboards, etc.
 - [ ] Add small song display on test page
 - [ ] Add progress bar on test page

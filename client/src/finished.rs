@@ -3,9 +3,7 @@ use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{ScoreRecord, Song, TestMode};
 
-use crate::song_summary;
 use crate::Msg as SuperMsg;
-use crate::Page;
 
 #[derive(Clone, Debug)]
 pub struct Model {
@@ -51,7 +49,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
             };
 
             orders.perform_cmd({
-                async move { 
+                async move {
                     match post_score(score).await {
                         Ok(s) if s.status().is_ok() => SuperMsg::Finished(SendSuccess),
                         _ => SuperMsg::Finished(SendFailure),
@@ -60,9 +58,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
             });
         }
         SendSuccess => {
-            orders.send_msg(SuperMsg::ChangePage(Page::Summary(song_summary::init(
-                Some(std::mem::take(&mut model.song)),
-            ))));
+            orders.send_msg(SuperMsg::SubmitScores(std::mem::take(&mut model.song)));
         }
         SendFailure => model.failed = true,
     }
@@ -86,12 +82,19 @@ pub fn view(model: &Model) -> Node<Msg> {
         h2!["Finished!"],
         p![format!("{} seconds", time)],
         p![format!("{} wmp", wpm)],
-        input![attrs!(
-            At::Type => "text",
-            At::AutoComplete => "off",
-            At::Placeholder => "Enter your name:",
-        ), input_ev(Ev::Input, |s| Msg::UpdateName(s))],
+        input![
+            attrs!(
+                At::Type => "text",
+                At::AutoComplete => "off",
+                At::Placeholder => "Enter your name:",
+            ),
+            input_ev(Ev::Input, |s| Msg::UpdateName(s))
+        ],
         button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
-        p![ if model.failed { "Failed to submit. Try again." } else { "" } ],
+        p![if model.failed {
+            "Failed to submit. Try again."
+        } else {
+            ""
+        }],
     ]
 }

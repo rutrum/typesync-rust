@@ -11,7 +11,7 @@ mod lyrics;
 mod song;
 
 pub use lyrics::{Lyrics, LyricsDifficulty, LyricsStats};
-pub use song::{Song, Tests, TestMode, Leaderboards};
+pub use song::{Leaderboards, Song, TestMode, Tests};
 
 #[cfg(feature = "database")]
 pub mod db;

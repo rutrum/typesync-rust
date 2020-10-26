@@ -9,8 +9,9 @@ use rocket_contrib::databases::diesel;
 pub mod db;
 pub mod genius;
 
-use typesync::{Song, SongRequest, Tests, Leaderboards};
+use typesync::{Leaderboards, Song, SongRequest, Tests};
 
+/*
 pub struct SongMetadata {
     pub title: String,
     pub artist: String,
@@ -31,6 +32,7 @@ impl SongMetadata {
         )
     }
 }
+*/
 
 #[database("typesync")]
 pub struct DbPool(diesel::SqliteConnection);

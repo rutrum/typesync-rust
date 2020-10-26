@@ -1,7 +1,6 @@
 use reqwest::Url;
 use serde_json::Value;
 use typesync::{Song, SongRequest};
-use crate::SongMetadata;
 
 use select::document::Document;
 use select::node::Node;
@@ -23,7 +22,7 @@ pub enum GeniusError {
     WebScrape,
 }
 
-pub fn search_song_on_genius(sr: SongRequest) -> Result<SongMetadata, GeniusError> {
+pub fn search_song_on_genius(sr: SongRequest) -> Result<Song, GeniusError> {
     use GeniusError::*;
 
     let text = query_genius_search(sr.title, sr.artist).map_err(|_| ApiFetch)?;
@@ -31,13 +30,13 @@ pub fn search_song_on_genius(sr: SongRequest) -> Result<SongMetadata, GeniusErro
     let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
     let raw_lyrics = scrape_for_lyrics(raw_html).ok_or(WebScrape)?;
 
-    Ok(SongMetadata {
-        title: song_scrape.title,
-        artist: song_scrape.artist,
+    Ok(Song::new(
+        song_scrape.title,
+        song_scrape.artist,
         raw_lyrics,
-        img_url: song_scrape.img_url,
-        genius_id: song_scrape.genius_id,
-    })
+        song_scrape.img_url,
+        song_scrape.genius_id,
+    ))
 }
 
 fn scrape_for_lyrics(raw: String) -> Option<String> {
