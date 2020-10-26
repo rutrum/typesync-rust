@@ -1,0 +1,2 @@
+[global.databases]
+typesync = { url = "./typesync.db" }

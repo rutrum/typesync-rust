@@ -1,18 +1,25 @@
 use serde::{Deserialize, Serialize};
 use unicode_normalization::UnicodeNormalization;
+//use diesel::{Queryable, backend::Backend, sqlite::Sqlite, deserialize::{FromSql, Result}};
 
-use crate::lyrics::*;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct SongRequest {
-    pub title: String,
-    pub artist: String,
-}
+use crate::*;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum TestMode {
     Simple,
     Standard,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct Tests {
+    pub simple: Lyrics,
+    pub standard: Lyrics,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct Leaderboards {
+    pub simple: Vec<ScoreRecord>,
+    pub standard: Vec<ScoreRecord>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -22,12 +29,7 @@ pub struct Song {
     pub img_url: String,
     pub genius_id: String,
     pub tests: Tests,
-}
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct Tests {
-    pub simple: Lyrics,
-    pub standard: Lyrics,
+    pub leaderboards: Leaderboards,
 }
 
 impl Song {
@@ -37,6 +39,7 @@ impl Song {
         raw_lyrics: String,
         img_url: String,
         genius_id: String,
+        leaderboards: Leaderboards,
     ) -> Self {
         let cleaned = clean(raw_lyrics);
 
@@ -51,6 +54,7 @@ impl Song {
             tests,
             img_url,
             genius_id,
+            leaderboards,
         }
     }
 

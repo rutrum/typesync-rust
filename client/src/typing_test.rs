@@ -1,9 +1,8 @@
 use seed::{prelude::*, *};
 use wasm_timer::Instant;
 
-use crate::Model as SuperModel;
 use crate::Msg as SuperMsg;
-use typesync::{Lyrics, Song, TestMode};
+use typesync::{Song, TestMode};
 
 #[derive(Clone, Debug)]
 pub struct Model {

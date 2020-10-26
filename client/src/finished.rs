@@ -14,6 +14,7 @@ pub struct Model {
     time: Duration,
     wpm: f32,
     mode: TestMode,
+    failed: bool,
 }
 
 pub fn init(time: Duration, wpm: f32, song: Song, mode: TestMode) -> Model {
@@ -23,12 +24,15 @@ pub fn init(time: Duration, wpm: f32, song: Song, mode: TestMode) -> Model {
         wpm,
         song,
         mode,
+        failed: false,
     }
 }
 
 pub enum Msg {
     UpdateName(String),
     Submit,
+    SendSuccess,
+    SendFailure,
 }
 
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
@@ -36,20 +40,42 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     match msg {
         UpdateName(s) => model.name = s,
         Submit => {
-            let name = std::mem::take(&mut model.name);
+            let name = model.name.clone();
 
             let score = ScoreRecord {
                 name,
                 genius_id: model.song.genius_id.clone(),
-                milliseconds: model.time.as_millis(),
+                milliseconds: model.time.as_millis() as i64,
                 absolute_time: 0, //Utc::now().timestamp(),
                 mode: model.mode,
             };
+
+            orders.perform_cmd({
+                async move { 
+                    match post_score(score).await {
+                        Ok(s) if s.status().is_ok() => SuperMsg::Finished(SendSuccess),
+                        _ => SuperMsg::Finished(SendFailure),
+                    }
+                }
+            });
+        }
+        SendSuccess => {
             orders.send_msg(SuperMsg::ChangePage(Page::Summary(song_summary::init(
                 Some(std::mem::take(&mut model.song)),
             ))));
         }
+        SendFailure => model.failed = true,
     }
+}
+
+/// Returns fetch that requests a song from the API.  Currently
+/// tries to parse result as a SongRequest, it will fail.
+async fn post_score(score: ScoreRecord) -> fetch::Result<Response> {
+    fetch::Request::new("http://localhost:8000/score")
+        .method(Method::Post)
+        .json(&score)?
+        .fetch()
+        .await
 }
 
 pub fn view(model: &Model) -> Node<Msg> {
@@ -64,7 +90,8 @@ pub fn view(model: &Model) -> Node<Msg> {
             At::Type => "text",
             At::AutoComplete => "off",
             At::Placeholder => "Enter your name:",
-        )],
+        ), input_ev(Ev::Input, |s| Msg::UpdateName(s))],
         button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
+        p![ if model.failed { "Failed to submit. Try again." } else { "" } ],
     ]
 }

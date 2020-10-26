@@ -20,7 +20,7 @@ tree:
     tree -I "pkg|target" --dirsfirst
 
 api:
-    cargo run -p api
+    cargo run -p api --bin api
 
 watch-api:
     watchexec -w api/src --force-poll 500 -- just api

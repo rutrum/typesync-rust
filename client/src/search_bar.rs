@@ -12,8 +12,8 @@ pub struct Model {
 
 pub fn init() -> Model {
     Model {
-        title: String::from("you suffer"),
-        artist: String::from("napalm death"),
+        //title: String::from("you suffer"),
+        //artist: String::from("napalm death"),
         searching: false,
         ..Default::default()
     }
@@ -80,7 +80,6 @@ fn title_input() -> Node<Msg> {
             At::Name => "title",
             At::AutoFocus => AtValue::None, // causes warning
             At::Placeholder => "Song Title",
-            At::Value => "you suffer",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();
@@ -99,7 +98,6 @@ fn artist_input() -> Node<Msg> {
             At::Type => "text",
             At::Name => "title",
             At::Placeholder => "Artist Name",
-            At::Value => "napalm death"
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();

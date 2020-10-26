@@ -7,14 +7,15 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-typesync = { path = ".." }
+typesync = { path = "..", features = ["database"] }
 rocket = "0.4.5"
 rocket_cors = { version = "0.5.2", default-features = false }
 reqwest = { version = "0.10.8", features = ["blocking", "json"] }
 serde_json = "1.0.59"
 select = "0.5.0"
+diesel = { version = "1.4.5", features = ["sqlite"] }
 
 [dependencies.rocket_contrib]
-version = "0.4.2"
+version = "0.4.5"
 default-features = false
-features = ["json"]
+features = ["json", "diesel_sqlite_pool"]
