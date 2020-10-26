@@ -60,7 +60,7 @@ pub fn view(model: &Model) -> Node<Msg> {
                     C!["modes"],
                     test_mode_view(TestMode::Standard, &song.tests.standard),
                     test_mode_view(TestMode::Simple, &song.tests.simple),
-                    button![ev(Ev::Click, |ev| start_test(ev)), "Start!"]
+                    IF!(model.mode.is_some() => button![ev(Ev::Click, |ev| start_test(ev)), "Start!"])
                 ],
             ],
             leaderboard_view(&model.leaderboards.standard, TestMode::Standard),
