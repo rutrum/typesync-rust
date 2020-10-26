@@ -82,7 +82,7 @@ fn leaderboard_view(leaderboard: &Vec<ScoreRecord>, mode: TestMode) -> Node<Msg>
     let title = format!("{:?}", mode);
     table![
         tr![th![attrs!(At::ColSpan => 4), &title],],
-        IF!(leaderboard.is_empty() => 
+        IF!(leaderboard.is_empty() =>
             tr![td![attrs!(At::ColSpan => 4), format!(
                 "Be the first to complete {} mode!",
                 title.to_lowercase()

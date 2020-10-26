@@ -14,6 +14,7 @@ pub struct Model {
     song: Song,
     mode: TestMode,
     lyric_num: usize,
+    typed_chars: usize,
 }
 
 impl Model {
@@ -23,6 +24,7 @@ impl Model {
 
     fn advance_lyric(&mut self) {
         self.lyric_num += 1;
+        self.typed_chars += self.buffer.len();
         self.buffer.clear();
     }
 
@@ -65,6 +67,7 @@ pub fn init(song: Song, mode: TestMode) -> Model {
         song: song,
         mode,
         lyric_num: 0,
+        typed_chars: 0,
     }
 }
 
@@ -124,9 +127,11 @@ pub fn view(model: &Model) -> Node<Msg> {
         Some(time) => format!("{:.*}", 2, time.elapsed().as_millis() as f32 / 1000.0),
         None => format!("0.00"),
     };
+    let total_typed = model.typed_chars + model.buffer.len();
+    let percentage = total_typed as f32 / model.total_chars as f32;
 
     div![
-        div![timer],
+        small_song_view(&model.song, model.mode, timer),
         input![
             attrs! {
                 At::AutoComplete => "off",
@@ -139,9 +144,35 @@ pub fn view(model: &Model) -> Node<Msg> {
             keyboard_ev(Ev::KeyPress, |ev| Msg::KeyPress(ev.key())), // fires first
             input_ev(Ev::Input, |s| Msg::InputChange(s)),            // fires second
         ],
+        progress_bar_view(percentage),
         div![
             div![id!["top-line"], model.this_lyric()],
             div![id!["bot-line"], model.next_lyric()],
         ],
+    ]
+}
+
+fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
+    div![
+        C!["small-song"],
+        img![
+            attrs!("alt" => "album art", "src" => song.img_url),
+            style!("width" => "100px", "height" => "100px"),
+        ],
+        div![
+            h1![id!["song-title"], &song.title],
+            h2![id!["song-artist"], &song.artist],
+        ],
+        div![
+            p![id!["mode"], format!("{:?}", mode)],
+            p![id!["diff"], format!("{:?}", &song.lyrics(mode).difficulty) ],
+        ],
+        div![timer],
+    ]
+}
+
+fn progress_bar_view(percentage: f32) -> Node<Msg> {
+    div![
+        format!("{}", percentage),
     ]
 }
