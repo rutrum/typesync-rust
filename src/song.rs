@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use unicode_normalization::UnicodeNormalization;
-//use diesel::{Queryable, backend::Backend, sqlite::Sqlite, deserialize::{FromSql, Result}};
 
 use crate::*;
 

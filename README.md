@@ -12,9 +12,10 @@ There are still features in the original version of the site that need to be rew
 - [ ] Add styling, make it look pretty, format leaderboards, etc.
 - [ ] Add small song display on test page
 - [ ] Add progress bar on test page
-- [ ] Display default leaderboard when no results are available
+- [x] Display default leaderboard when no results are available
 - [ ] Disallow user from starting song without selecting mode
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
+- [ ] Save current time at score submission using web-sys
 
 ## New features to add
 
