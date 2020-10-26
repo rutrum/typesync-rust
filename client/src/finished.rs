@@ -3,6 +3,7 @@ use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{ScoreRecord, Song, TestMode};
 
+use crate::api_call;
 use crate::Msg as SuperMsg;
 
 #[derive(Clone, Debug)]
@@ -50,7 +51,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 
             orders.perform_cmd({
                 async move {
-                    match post_score(score).await {
+                    match api_call::post_score(score).await {
                         Ok(s) if s.status().is_ok() => SuperMsg::Finished(SendSuccess),
                         _ => SuperMsg::Finished(SendFailure),
                     }
@@ -62,16 +63,6 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
         }
         SendFailure => model.failed = true,
     }
-}
-
-/// Returns fetch that requests a song from the API.  Currently
-/// tries to parse result as a SongRequest, it will fail.
-async fn post_score(score: ScoreRecord) -> fetch::Result<Response> {
-    fetch::Request::new("http://localhost:8000/score")
-        .method(Method::Post)
-        .json(&score)?
-        .fetch()
-        .await
 }
 
 pub fn view(model: &Model) -> Node<Msg> {
