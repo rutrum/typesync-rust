@@ -26,7 +26,7 @@ impl Into<TestMode> for TestModeString {
     fn into(self) -> TestMode {
         match self.0.as_ref() {
             "Simple" => TestMode::Simple,
-            "Standard" | _ => TestMode::Standard,
+            _ => TestMode::Standard,
         }
     }
 }

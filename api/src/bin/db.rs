@@ -16,8 +16,8 @@ fn main() {
     }
 }
 
-fn read_scores(args: &[String]) {
-    let conn = db::create_connection();
+fn read_scores(_args: &[String]) {
+    let _conn = db::create_connection();
     // can't do stuff with just a SqliteConnection, need DbPool using rocket
 }
 

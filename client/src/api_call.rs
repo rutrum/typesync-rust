@@ -1,4 +1,4 @@
-use seed::{prelude::*, *};
+use seed::{prelude::*};
 use typesync::{Song, ScoreRecord, Leaderboards, SongRequest};
 
 pub async fn post_score(score: ScoreRecord) -> fetch::Result<Response> {
@@ -9,7 +9,7 @@ pub async fn post_score(score: ScoreRecord) -> fetch::Result<Response> {
         .await
 }
 
-pub async fn get_leaderboards(genius_id: &String) -> fetch::Result<Leaderboards> {
+pub async fn get_leaderboards(genius_id: &str) -> fetch::Result<Leaderboards> {
     fetch::Request::new(format!("http://localhost:8000/leaderboards/{}", genius_id))
         .fetch()
         .await?

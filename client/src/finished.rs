@@ -79,7 +79,7 @@ pub fn view(model: &Model) -> Node<Msg> {
                 At::AutoComplete => "off",
                 At::Placeholder => "Enter your name:",
             ),
-            input_ev(Ev::Input, |s| Msg::UpdateName(s))
+            input_ev(Ev::Input, Msg::UpdateName)
         ],
         button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
         p![if model.failed {

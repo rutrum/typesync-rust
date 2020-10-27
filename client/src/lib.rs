@@ -1,6 +1,6 @@
 use seed::{prelude::*, *};
 use std::time::Duration;
-use typesync::{Leaderboards, Song, TestMode};
+use typesync::{Song, TestMode};
 
 mod finished;
 mod search_bar;

@@ -2,15 +2,13 @@
 
 #[macro_use]
 extern crate rocket;
-#[macro_use]
 extern crate rocket_contrib;
 extern crate rocket_cors;
 
 use rocket::http::Status;
-use rocket_contrib::databases::diesel;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
-use typesync::{Leaderboards, NewScoreRecord, ScoreRecord, Song, SongRequest};
+use typesync::{Leaderboards, NewScoreRecord, Song, SongRequest};
 
 use api::db;
 use api::genius;
@@ -27,7 +25,7 @@ fn save_score(conn: DbPool, record: Json<NewScoreRecord>) -> Status {
 }
 
 #[post("/lyrics", data = "<request>")]
-fn song_request(conn: DbPool, request: Json<SongRequest>) -> Json<Option<Song>> {
+fn song_request(request: Json<SongRequest>) -> Json<Option<Song>> {
     let sr = request.into_inner();
     println!("Searching \"{}\" by {}", sr.title, sr.artist);
     let song = genius::search_song_on_genius(sr);

@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use typesync::{Song, SongRequest};
+use typesync::{SongRequest};
 
 use crate::api_call;
 use crate::Msg as SuperMsg;

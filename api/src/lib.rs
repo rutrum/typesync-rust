@@ -9,8 +9,6 @@ use rocket_contrib::databases::diesel;
 pub mod db;
 pub mod genius;
 
-use typesync::{Leaderboards, Song, SongRequest, Tests};
-
 /*
 pub struct SongMetadata {
     pub title: String,

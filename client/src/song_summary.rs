@@ -60,25 +60,29 @@ pub fn view(model: &Model) -> Node<Msg> {
                     C!["modes"],
                     test_mode_view(TestMode::Standard, &song.tests.standard),
                     test_mode_view(TestMode::Simple, &song.tests.simple),
-                    IF!(model.mode.is_some() => button![ev(Ev::Click, |ev| start_test(ev)), "Start!"])
+                    IF!(model.mode.is_some() => button![ev(Ev::Click, start_test), "Start!"])
                 ],
             ],
             leaderboard_view(&model.leaderboards.standard, TestMode::Standard),
             leaderboard_view(&model.leaderboards.simple, TestMode::Simple),
         ],
-        None => div![
-            C!["song-summary"],
-            img![attrs!("alt" => "not found!", "src" => "record.png"),],
-            div![
-                C!["details"],
-                h2!["Song not found."],
-                p!["Try a different song or check your spelling!"],
-            ]
-        ],
+        None => no_song_view(),
     }
 }
 
-fn leaderboard_view(leaderboard: &Vec<ScoreRecord>, mode: TestMode) -> Node<Msg> {
+fn no_song_view() -> Node<Msg> {
+	div![
+		C!["song-summary"],
+		img![attrs!("alt" => "not found!", "src" => "record.png"),],
+		div![
+			C!["details"],
+			h2!["Song not found."],
+			p!["Try a different song or check your spelling!"],
+		]
+	]
+}
+
+fn leaderboard_view(leaderboard: &[ScoreRecord], mode: TestMode) -> Node<Msg> {
     let title = format!("{:?}", mode);
     table![
         tr![th![attrs!(At::ColSpan => 4), &title],],
@@ -95,7 +99,7 @@ fn leaderboard_view(leaderboard: &Vec<ScoreRecord>, mode: TestMode) -> Node<Msg>
                 td![i + 1],
                 td![&score.name],
                 td![&score.absolute_time],
-                td![&score.milliseconds],
+                td![format!("{:.*}", 2, score.milliseconds as f32 / 1000.0)],
             ]
         })
     ]

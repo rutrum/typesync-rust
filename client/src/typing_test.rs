@@ -48,7 +48,7 @@ impl Model {
         self.lyric_num == self.lyrics().len() - 1
     }
 
-    fn will_match_lyric(&self, key: &String) -> bool {
+    fn will_match_lyric(&self, key: &str) -> bool {
         let after = format!("{}{}", self.buffer, key);
         match self.this_lyric() {
             None => false,
@@ -64,7 +64,7 @@ pub fn init(song: Song, mode: TestMode) -> Model {
         finished_line: false,
         time: None,
         total_chars: song.lyrics(mode).stats.total,
-        song: song,
+        song,
         mode,
         lyric_num: 0,
         typed_chars: 0,
@@ -125,8 +125,13 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 pub fn view(model: &Model) -> Node<Msg> {
     let timer = match model.time {
         Some(time) => format!("{:.*}", 2, time.elapsed().as_millis() as f32 / 1000.0),
-        None => format!("0.00"),
+        None => "0.00".to_string(),
     };
+
+	use chrono::Utc;
+	use chrono::DateTime;
+	use chrono::NaiveDateTime;
+	let _dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(61, 0), Utc);
     let total_typed = model.typed_chars + model.buffer.len();
     let percentage = total_typed as f32 / model.total_chars as f32;
 
@@ -142,7 +147,7 @@ pub fn view(model: &Model) -> Node<Msg> {
             },
             C![if model.accurate { "good" } else { "bad" }],
             keyboard_ev(Ev::KeyPress, |ev| Msg::KeyPress(ev.key())), // fires first
-            input_ev(Ev::Input, |s| Msg::InputChange(s)),            // fires second
+            input_ev(Ev::Input, Msg::InputChange),            // fires second
         ],
         progress_bar_view(percentage),
         div![
