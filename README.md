@@ -15,7 +15,7 @@ There are still features in the original version of the site that need to be rew
 - [x] Display default leaderboard when no results are available
 - [x] Disallow user from starting song without selecting mode
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
-- [ ] Save current time at score submission using web-sys
+- [x] Save current time at score submission using web-sys
 
 ## New features to add
 
