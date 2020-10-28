@@ -1,15 +1,15 @@
 use crate::DbPool;
-use diesel::{prelude::*, SqliteConnection};
+use diesel::{prelude::*, MysqlConnection};
 use std::time::SystemTime;
 use typesync::db::schema;
-use typesync::{Leaderboards, NewScore, DbScore, Score};
+use typesync::{TestMode, Leaderboards, NewScore, DbScore, Score};
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
-pub fn create_connection() -> SqliteConnection {
-    let db = "./typesync.db";
-    SqliteConnection::establish(db)
-        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", db))
+pub fn create_connection() -> MysqlConnection {
+    let url = "mysql://root:example@127.0.0.1:3306/typesync";
+    MysqlConnection::establish(url)
+        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", url))
 }
 
 pub fn insert_record(conn: DbPool, record: NewScore) -> Result<usize> {
@@ -28,16 +28,16 @@ pub fn select_records(conn: DbPool) -> Result<Vec<Score>> {
 
 pub fn get_leaderboards(conn: DbPool, g_id: &str) -> Result<Leaderboards> {
     use schema::scores::dsl::*;
-    let simple = scores
-        .filter(mode.eq("Simple"))
+    let standard = scores
+        .filter(mode.eq(TestMode::Standard.as_i8()))
         .filter(genius_id.eq(&g_id))
         .order(milliseconds)
         .limit(10)
         .load::<DbScore>(&*conn)?
         .into_iter()
         .map(|x| x.into()).collect();
-    let standard = scores
-        .filter(mode.eq("Standard"))
+    let simple = scores
+        .filter(mode.eq(TestMode::Simple.as_i8()))
         .filter(genius_id.eq(&g_id))
         .order(milliseconds)
         .limit(10)

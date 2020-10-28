@@ -1,2 +1,2 @@
 [global.databases]
-typesync = { url = "./typesync.db" }
+typesync = { url = "mysql://root:example@127.0.0.1:3306/typesync" }

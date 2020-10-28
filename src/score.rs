@@ -30,7 +30,7 @@ impl NewScore {
             genius_id: self.genius_id,
             milliseconds: self.milliseconds,
             absolute_time: time.as_secs() as i64,
-            mode: format!("{:?}", self.mode),
+            mode: self.mode.as_i8(),
         }
     }
 }
@@ -41,7 +41,7 @@ pub struct DbScore {
     pub genius_id: String,
     pub milliseconds: i64,
     pub absolute_time: i64,
-    pub mode: String,
+    pub mode: i8,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

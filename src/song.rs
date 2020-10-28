@@ -15,6 +15,15 @@ pub enum TestMode {
     Standard,
 }
 
+impl TestMode {
+    pub fn as_i8(&self) -> i8 {
+        match self {
+            TestMode::Standard => 0,
+            TestMode::Simple => 1,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Tests {
     pub simple: Lyrics,
