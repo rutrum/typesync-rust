@@ -1,5 +1,6 @@
 use crate::TestMode;
 use std::time::Duration;
+use chrono::{TimeZone, DateTime, Utc};
 
 #[cfg(feature = "database")]
 use crate::db::schema::scores;
@@ -48,7 +49,7 @@ pub struct ScoreRecord {
     pub name: String,
     pub genius_id: String,
     pub milliseconds: i64,
-    pub absolute_time: i64,
+    pub absolute_time: String,
     pub mode: TestMode,
 }
 
@@ -63,8 +64,16 @@ impl From<NewScoreRecordDb> for ScoreRecord {
             name: db_record.name,
             genius_id: db_record.genius_id,
             milliseconds: db_record.milliseconds,
-            absolute_time: db_record.absolute_time,
+            absolute_time: seconds_since_unix_to_string(db_record.absolute_time),
             mode: mode,
         }
     }
+}
+
+fn seconds_since_unix_to_string(secs: i64) -> String {
+    use chrono::Duration;
+
+    let unix = Utc.ymd(1970, 1, 1).and_hms(0, 0, 0);
+    let datetime = unix + Duration::seconds(secs);
+    format!("{}", datetime.format("%B %e, %Y"))
 }
