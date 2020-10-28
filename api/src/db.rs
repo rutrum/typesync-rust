@@ -2,7 +2,7 @@ use crate::DbPool;
 use diesel::{prelude::*, SqliteConnection};
 use std::time::SystemTime;
 use typesync::db::schema;
-use typesync::{Leaderboards, NewScoreRecord, ScoreRecord};
+use typesync::{Leaderboards, NewScoreRecord, NewScoreRecordDb, ScoreRecord};
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
@@ -22,7 +22,8 @@ pub fn insert_record(conn: DbPool, record: NewScoreRecord) -> Result<usize> {
 
 pub fn select_records(conn: DbPool) -> Result<Vec<ScoreRecord>> {
     use schema::scores::dsl::*;
-    scores.load(&*conn)
+    let db_scores: Vec<NewScoreRecordDb> = scores.load(&*conn)?;
+    Ok(db_scores.into_iter().map(|x| x.into()).collect())
 }
 
 pub fn get_leaderboards(conn: DbPool, g_id: &str) -> Result<Leaderboards> {
@@ -32,12 +33,16 @@ pub fn get_leaderboards(conn: DbPool, g_id: &str) -> Result<Leaderboards> {
         .filter(genius_id.eq(&g_id))
         .order(milliseconds)
         .limit(10)
-        .load(&*conn)?;
+        .load::<NewScoreRecordDb>(&*conn)?
+        .into_iter()
+        .map(|x| x.into()).collect();
     let standard = scores
         .filter(mode.eq("Standard"))
         .filter(genius_id.eq(&g_id))
         .order(milliseconds)
         .limit(10)
-        .load(&*conn)?;
+        .load::<NewScoreRecordDb>(&*conn)?
+        .into_iter()
+        .map(|x| x.into()).collect();
     Ok(Leaderboards { simple, standard })
 }

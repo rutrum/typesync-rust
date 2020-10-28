@@ -8,7 +8,7 @@ mod score;
 
 pub use lyrics::{Lyrics, LyricsDifficulty, LyricsStats};
 pub use song::{Song, SongRequest, TestMode, Tests};
-pub use score::{Leaderboards, NewScoreRecord, ScoreRecord};
+pub use score::{Leaderboards, NewScoreRecordDb, NewScoreRecord, ScoreRecord};
 
 #[cfg(feature = "database")]
 pub mod db;

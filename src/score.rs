@@ -34,7 +34,7 @@ impl NewScoreRecord {
     }
 }
 
-#[cfg_attr(feature = "database", derive(Insertable), table_name = "scores")]
+#[cfg_attr(feature = "database", derive(Insertable, Queryable), table_name = "scores")]
 pub struct NewScoreRecordDb {
     pub name: String,
     pub genius_id: String,
@@ -43,39 +43,28 @@ pub struct NewScoreRecordDb {
     pub mode: String,
 }
 
-#[cfg_attr(feature = "database", derive(Queryable))]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScoreRecord {
     pub name: String,
     pub genius_id: String,
     pub milliseconds: i64,
     pub absolute_time: i64,
-    #[cfg_attr(feature = "database", diesel(deserialize_as = "TestModeString"))]
     pub mode: TestMode,
 }
 
-#[cfg(feature = "database")]
-pub struct TestModeString(String);
-
-#[cfg(feature = "database")]
-impl Into<TestMode> for TestModeString {
-    fn into(self) -> TestMode {
-        match self.0.as_ref() {
+impl From<NewScoreRecordDb> for ScoreRecord {
+    fn from(db_record: NewScoreRecordDb) -> Self {
+        let mode = match db_record.mode.as_ref() {
             "Simple" => TestMode::Simple,
             _ => TestMode::Standard,
+        };
+
+        ScoreRecord {
+            name: db_record.name,
+            genius_id: db_record.genius_id,
+            milliseconds: db_record.milliseconds,
+            absolute_time: db_record.absolute_time,
+            mode: mode,
         }
-    }
-}
-
-#[cfg(feature = "database")]
-impl<DB, ST> Queryable<ST, DB> for TestModeString
-where
-    DB: diesel::backend::Backend,
-    String: Queryable<ST, DB>,
-{
-    type Row = <String as Queryable<ST, DB>>::Row;
-
-    fn build(row: Self::Row) -> Self {
-        TestModeString(String::build(row))
     }
 }
