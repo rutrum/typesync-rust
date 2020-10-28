@@ -1,7 +1,7 @@
 //use chrono::Utc;
 use seed::{prelude::*, *};
 use std::time::Duration;
-use typesync::{NewScoreRecord, Song, TestMode};
+use typesync::{NewScore, Song, TestMode};
 
 use crate::api_call;
 use crate::Msg as SuperMsg;
@@ -41,7 +41,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
         Submit => {
             let name = model.name.clone();
 
-            let score = NewScoreRecord {
+            let score = NewScore {
                 name,
                 genius_id: model.song.genius_id.clone(),
                 milliseconds: model.time.as_millis() as i64,

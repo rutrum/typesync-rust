@@ -1,6 +1,6 @@
 use crate::TestMode;
 use std::time::Duration;
-use chrono::{TimeZone, DateTime, Utc};
+use chrono::{TimeZone, Utc};
 
 #[cfg(feature = "database")]
 use crate::db::schema::scores;
@@ -11,21 +11,21 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Leaderboards {
-    pub simple: Vec<ScoreRecord>,
-    pub standard: Vec<ScoreRecord>,
+    pub simple: Vec<Score>,
+    pub standard: Vec<Score>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NewScoreRecord {
+pub struct NewScore {
     pub name: String,
     pub genius_id: String,
     pub milliseconds: i64,
     pub mode: TestMode,
 }
 
-impl NewScoreRecord {
-    pub fn into_db_with_time(self, time: Duration) -> NewScoreRecordDb {
-        NewScoreRecordDb {
+impl NewScore {
+    pub fn into_db_with_time(self, time: Duration) -> DbScore {
+        DbScore {
             name: self.name,
             genius_id: self.genius_id,
             milliseconds: self.milliseconds,
@@ -36,7 +36,7 @@ impl NewScoreRecord {
 }
 
 #[cfg_attr(feature = "database", derive(Insertable, Queryable), table_name = "scores")]
-pub struct NewScoreRecordDb {
+pub struct DbScore {
     pub name: String,
     pub genius_id: String,
     pub milliseconds: i64,
@@ -45,27 +45,27 @@ pub struct NewScoreRecordDb {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ScoreRecord {
+pub struct Score {
     pub name: String,
     pub genius_id: String,
     pub milliseconds: i64,
-    pub absolute_time: String,
-    pub mode: TestMode,
+    pub date: String,
+    //pub mode: TestMode,
 }
 
-impl From<NewScoreRecordDb> for ScoreRecord {
-    fn from(db_record: NewScoreRecordDb) -> Self {
-        let mode = match db_record.mode.as_ref() {
+impl From<DbScore> for Score {
+    fn from(db_record: DbScore) -> Self {
+        /*let mode = match db_record.mode.as_ref() {
             "Simple" => TestMode::Simple,
             _ => TestMode::Standard,
-        };
+        };*/
 
-        ScoreRecord {
+        Score {
             name: db_record.name,
             genius_id: db_record.genius_id,
             milliseconds: db_record.milliseconds,
-            absolute_time: seconds_since_unix_to_string(db_record.absolute_time),
-            mode: mode,
+            date: seconds_since_unix_to_string(db_record.absolute_time),
+            //mode: mode,
         }
     }
 }

@@ -11,7 +11,7 @@ use rocket::http::Status;
 use rocket::State;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
-use typesync::{Leaderboards, NewScoreRecord, Song, SongRequest};
+use typesync::{Leaderboards, NewScore, Song, SongRequest};
 
 use api::db;
 use api::genius;
@@ -22,7 +22,7 @@ use std::sync::Mutex;
 type SongCache = Mutex<LruCache<SongRequest, Song>>;
 
 #[post("/score", data = "<record>")]
-fn save_score(conn: DbPool, record: Json<NewScoreRecord>) -> Status {
+fn save_score(conn: DbPool, record: Json<NewScore>) -> Status {
     let record = record.into_inner();
     println!("Saving score: {:?}", record);
     match db::insert_record(conn, record) {

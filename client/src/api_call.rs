@@ -1,7 +1,7 @@
 use seed::prelude::*;
-use typesync::{Leaderboards, NewScoreRecord, Song, SongRequest};
+use typesync::{Leaderboards, NewScore, Song, SongRequest};
 
-pub async fn post_score(score: NewScoreRecord) -> fetch::Result<Response> {
+pub async fn post_score(score: NewScore) -> fetch::Result<Response> {
     fetch::Request::new("http://localhost:8000/score")
         .method(Method::Post)
         .json(&score)?

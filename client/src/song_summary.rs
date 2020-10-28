@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use typesync::{Leaderboards, Lyrics, ScoreRecord, Song, TestMode};
+use typesync::{Leaderboards, Lyrics, Score, Song, TestMode};
 use web_sys::Event;
 
 use crate::Msg as SuperMsg;
@@ -82,7 +82,7 @@ fn no_song_view() -> Node<Msg> {
     ]
 }
 
-fn leaderboard_view(leaderboard: &[ScoreRecord], mode: TestMode) -> Node<Msg> {
+fn leaderboard_view(leaderboard: &[Score], mode: TestMode) -> Node<Msg> {
     let title = format!("{:?}", mode);
     table![
         tr![th![attrs!(At::ColSpan => 4), &title],],
@@ -98,7 +98,7 @@ fn leaderboard_view(leaderboard: &[ScoreRecord], mode: TestMode) -> Node<Msg> {
             tr![
                 td![i + 1],
                 td![&score.name],
-                td![&score.absolute_time],
+                td![&score.date],
                 td![format!("{:.*}", 2, score.milliseconds as f32 / 1000.0)],
             ]
         })
