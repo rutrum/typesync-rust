@@ -17,6 +17,11 @@ There are still features in the original version of the site that need to be rew
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
 - [x] Save current time at score submission using web-sys
 
+## Things to clean
+
+- [ ] Save an diesel-friendly way to save testmode to the database (not string)
+- [ ] Move `DbScore` to api workspace
+
 ## New features to add
 
 This should be done only after completing the above, as it will be equivalent or better than the previous site at that point.
