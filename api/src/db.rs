@@ -12,12 +12,12 @@ pub fn create_connection() -> SqliteConnection {
         .unwrap_or_else(|_| panic!("Cannot connect to database at {}", db))
 }
 
-pub fn insert_record(conn: DbPool, mut record: NewScoreRecord) -> Result<usize> {
+pub fn insert_record(conn: DbPool, record: NewScoreRecord) -> Result<usize> {
     use schema::scores::dsl::*;
     let now = SystemTime::now();
     let how_long = now.duration_since(SystemTime::UNIX_EPOCH).unwrap();
-    record.absolute_time = how_long.as_secs() as i64;
-    diesel::insert_into(scores).values(record).execute(&*conn)
+    let record_db = record.into_db_with_time(how_long);
+    diesel::insert_into(scores).values(record_db).execute(&*conn)
 }
 
 pub fn select_records(conn: DbPool) -> Result<Vec<ScoreRecord>> {

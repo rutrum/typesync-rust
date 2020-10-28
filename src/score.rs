@@ -1,4 +1,5 @@
 use crate::TestMode;
+use std::time::Duration;
 
 #[cfg(feature = "database")]
 use crate::db::schema::scores;
@@ -13,14 +14,33 @@ pub struct Leaderboards {
     pub standard: Vec<ScoreRecord>,
 }
 
-#[cfg_attr(feature = "database", derive(Insertable), table_name = "scores")]
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct NewScoreRecord<'a> {
-    pub name: &'a str,
-    pub genius_id: &'a str,
+pub struct NewScoreRecord {
+    pub name: String,
+    pub genius_id: String,
+    pub milliseconds: i64,
+    pub mode: TestMode,
+}
+
+impl NewScoreRecord {
+    pub fn into_db_with_time(self, time: Duration) -> NewScoreRecordDb {
+        NewScoreRecordDb {
+            name: self.name,
+            genius_id: self.genius_id,
+            milliseconds: self.milliseconds,
+            absolute_time: time.as_secs() as i64,
+            mode: format!("{:?}", self.mode),
+        }
+    }
+}
+
+#[cfg_attr(feature = "database", derive(Insertable), table_name = "scores")]
+pub struct NewScoreRecordDb {
+    pub name: String,
+    pub genius_id: String,
     pub milliseconds: i64,
     pub absolute_time: i64,
-    pub mode: &'a str,
+    pub mode: String,
 }
 
 #[cfg_attr(feature = "database", derive(Queryable))]

@@ -29,4 +29,4 @@ fmt:
     cargo fmt
 
 watch-check:
-    watchexec -- cargo check --all
+    watchexec -- cargo check --workspace
