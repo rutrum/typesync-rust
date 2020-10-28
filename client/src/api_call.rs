@@ -1,5 +1,5 @@
-use seed::{prelude::*};
-use typesync::{Song, ScoreRecord, Leaderboards, SongRequest};
+use seed::prelude::*;
+use typesync::{Leaderboards, ScoreRecord, Song, SongRequest};
 
 pub async fn post_score(score: ScoreRecord) -> fetch::Result<Response> {
     fetch::Request::new("http://localhost:8000/score")
@@ -27,4 +27,3 @@ pub async fn post_song_request(song_request: SongRequest) -> fetch::Result<Optio
         .json()
         .await
 }
-

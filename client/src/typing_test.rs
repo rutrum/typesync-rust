@@ -128,10 +128,10 @@ pub fn view(model: &Model) -> Node<Msg> {
         None => "0.00".to_string(),
     };
 
-	use chrono::Utc;
-	use chrono::DateTime;
-	use chrono::NaiveDateTime;
-	let _dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(61, 0), Utc);
+    use chrono::DateTime;
+    use chrono::NaiveDateTime;
+    use chrono::Utc;
+    let _dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(61, 0), Utc);
     let total_typed = model.typed_chars + model.buffer.len();
     let percentage = total_typed as f32 / model.total_chars as f32;
 
@@ -147,7 +147,7 @@ pub fn view(model: &Model) -> Node<Msg> {
             },
             C![if model.accurate { "good" } else { "bad" }],
             keyboard_ev(Ev::KeyPress, |ev| Msg::KeyPress(ev.key())), // fires first
-            input_ev(Ev::Input, Msg::InputChange),            // fires second
+            input_ev(Ev::Input, Msg::InputChange),                   // fires second
         ],
         progress_bar_view(percentage),
         div![
@@ -170,14 +170,12 @@ fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
         ],
         div![
             p![id!["mode"], format!("{:?}", mode)],
-            p![id!["diff"], format!("{:?}", &song.lyrics(mode).difficulty) ],
+            p![id!["diff"], format!("{:?}", &song.lyrics(mode).difficulty)],
         ],
         div![timer],
     ]
 }
 
 fn progress_bar_view(percentage: f32) -> Node<Msg> {
-    div![
-        format!("{}", percentage),
-    ]
+    div![format!("{}", percentage),]
 }

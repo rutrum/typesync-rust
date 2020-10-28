@@ -1,8 +1,8 @@
 use crate::DbPool;
 use diesel::{prelude::*, SqliteConnection};
+use std::time::SystemTime;
 use typesync::db::schema;
 use typesync::{Leaderboards, NewScoreRecord, ScoreRecord};
-use std::time::{SystemTime};
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
@@ -14,9 +14,9 @@ pub fn create_connection() -> SqliteConnection {
 
 pub fn insert_record(conn: DbPool, mut record: NewScoreRecord) -> Result<usize> {
     use schema::scores::dsl::*;
-	let now = SystemTime::now();
-	let how_long = now.duration_since(SystemTime::UNIX_EPOCH).unwrap();
-	record.absolute_time = how_long.as_secs() as i64;
+    let now = SystemTime::now();
+    let how_long = now.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+    record.absolute_time = how_long.as_secs() as i64;
     diesel::insert_into(scores).values(record).execute(&*conn)
 }
 

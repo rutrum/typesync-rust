@@ -71,15 +71,15 @@ pub fn view(model: &Model) -> Node<Msg> {
 }
 
 fn no_song_view() -> Node<Msg> {
-	div![
-		C!["song-summary"],
-		img![attrs!("alt" => "not found!", "src" => "record.png"),],
-		div![
-			C!["details"],
-			h2!["Song not found."],
-			p!["Try a different song or check your spelling!"],
-		]
-	]
+    div![
+        C!["song-summary"],
+        img![attrs!("alt" => "not found!", "src" => "record.png"),],
+        div![
+            C!["details"],
+            h2!["Song not found."],
+            p!["Try a different song or check your spelling!"],
+        ]
+    ]
 }
 
 fn leaderboard_view(leaderboard: &[ScoreRecord], mode: TestMode) -> Node<Msg> {

@@ -22,13 +22,13 @@ pub enum GeniusError {
     WebScrape,
 }
 
-pub fn search_song_on_genius(sr: SongRequest) -> Result<Song, GeniusError> {
+pub fn search_song_on_genius(sr: &SongRequest) -> Result<Song, GeniusError> {
     use GeniusError::*;
 
-    let text = query_genius_search(sr.title, sr.artist).map_err(|_| ApiFetch)?;
-    let song_scrape = json_to_song(text).ok_or(ApiScrape)?;
+    let text = query_genius_search(&sr.title, &sr.artist).map_err(|_| ApiFetch)?;
+    let song_scrape = json_to_song(&text).ok_or(ApiScrape)?;
     let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
-    let raw_lyrics = scrape_for_lyrics(raw_html).ok_or(WebScrape)?;
+    let raw_lyrics = scrape_for_lyrics(&raw_html).ok_or(WebScrape)?;
 
     Ok(Song::new(
         song_scrape.title,
@@ -39,7 +39,7 @@ pub fn search_song_on_genius(sr: SongRequest) -> Result<Song, GeniusError> {
     ))
 }
 
-fn scrape_for_lyrics(raw: String) -> Option<String> {
+fn scrape_for_lyrics(raw: &str) -> Option<String> {
     let doc: Document = Document::from_read(raw.as_bytes()).unwrap();
     let div: Node = doc.find(Class("lyrics")).next()?;
     let lyrics = div.find(Name("p")).next()?.text();
@@ -56,7 +56,7 @@ fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
         .text()
 }
 
-fn json_to_song(text: String) -> Option<SongScrape> {
+fn json_to_song(text: &str) -> Option<SongScrape> {
     let json: Value = serde_json::from_str(&text).unwrap();
 
     let metadata = json.get("response")?.get("hits")?.get(0)?.get("result")?;
@@ -80,7 +80,7 @@ fn json_to_song(text: String) -> Option<SongScrape> {
     })
 }
 
-fn query_genius_search(title: String, artist: String) -> reqwest::Result<String> {
+fn query_genius_search(title: &str, artist: &str) -> reqwest::Result<String> {
     let client = reqwest::blocking::Client::new();
     let url = Url::parse_with_params(
         "https://api.genius.com/search",

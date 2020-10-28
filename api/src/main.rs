@@ -2,10 +2,13 @@
 
 #[macro_use]
 extern crate rocket;
+extern crate lru;
 extern crate rocket_contrib;
 extern crate rocket_cors;
 
+use lru::LruCache;
 use rocket::http::Status;
+use rocket::State;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
 use typesync::{Leaderboards, NewScoreRecord, Song, SongRequest};
@@ -13,6 +16,10 @@ use typesync::{Leaderboards, NewScoreRecord, Song, SongRequest};
 use api::db;
 use api::genius;
 use api::DbPool;
+
+use std::sync::Mutex;
+
+type SongCache = Mutex<LruCache<SongRequest, Song>>;
 
 #[post("/score", data = "<record>")]
 fn save_score(conn: DbPool, record: Json<NewScoreRecord>) -> Status {
@@ -25,16 +32,27 @@ fn save_score(conn: DbPool, record: Json<NewScoreRecord>) -> Status {
 }
 
 #[post("/lyrics", data = "<request>")]
-fn song_request(request: Json<SongRequest>) -> Json<Option<Song>> {
+fn song_request(state: State<SongCache>, request: Json<SongRequest>) -> Json<Option<Song>> {
     let sr = request.into_inner();
     println!("Searching \"{}\" by {}", sr.title, sr.artist);
-    let song = genius::search_song_on_genius(sr);
 
-    match song {
-        Err(_) => Json(None),
-        Ok(song) => {
-            println!("Found \"{}\" by {}", song.title, song.artist);
-            Json(Some(song))
+    let mut cache = state.lock().unwrap();
+
+    match cache.peek(&sr) {
+        None => {
+            let song = genius::search_song_on_genius(&sr);
+            match song {
+                Err(_) => Json(None),
+                Ok(song) => {
+                    cache.put(sr.clone(), song.clone());
+                    println!("Found \"{}\" by {}", song.title, song.artist);
+                    Json(Some(song))
+                }
+            }
+        }
+        Some(song) => {
+            println!("Found cached \"{}\" by {}", song.title, song.artist);
+            Json(Some(song.clone()))
         }
     }
 }
@@ -51,8 +69,11 @@ fn main() -> Result<(), Error> {
     }
     .to_cors()?;
 
+    let cache: SongCache = Mutex::new(LruCache::new(100));
+
     rocket::ignite()
         .mount("/", routes![song_request, save_score, fetch_leaderboards])
+        .manage(cache)
         .attach(cors)
         .attach(DbPool::fairing())
         .launch();

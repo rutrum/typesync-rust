@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use typesync::{SongRequest};
+use typesync::SongRequest;
 
 use crate::api_call;
 use crate::Msg as SuperMsg;
@@ -38,9 +38,14 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 
             // don't skip to allow search to refresh
             orders.perform_cmd({
-                async move { SuperMsg::FoundSong(
-                    api_call::post_song_request(song_request).await.ok().flatten()
-                )}
+                async move {
+                    SuperMsg::FoundSong(
+                        api_call::post_song_request(song_request)
+                            .await
+                            .ok()
+                            .flatten(),
+                    )
+                }
             });
         }
     }

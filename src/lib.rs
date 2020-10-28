@@ -44,6 +44,13 @@ where
     }
 }
 
+// TODO make existing scorerecord have string as absolute time.
+//  Store date in mysql database.  The serialization should be to a string.
+//
+// Read only struct shouldn't have absolute time at all, it will be calculated
+// as needed.  But then what do I store...mysql has a date format, so I should
+// use that.  Maybe this should get tackled after moving over to mysql.
+
 #[cfg_attr(feature = "database", derive(Queryable))]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ScoreRecord {
@@ -65,7 +72,7 @@ pub struct NewScoreRecord<'a> {
     pub mode: &'a str,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SongRequest {
     pub title: String,
     pub artist: String,

@@ -2,12 +2,12 @@ use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{Song, TestMode};
 
+mod api_call;
 mod finished;
 mod search_bar;
 mod song_summary;
 mod title;
 mod typing_test;
-mod api_call;
 
 #[derive(Clone, Debug)]
 pub enum Page {
@@ -57,7 +57,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 log!("Found ", genius_id);
                 orders.perform_cmd({
                     async move {
-                        let l = api_call::get_leaderboards(&genius_id).await.unwrap_or_default();
+                        let l = api_call::get_leaderboards(&genius_id)
+                            .await
+                            .unwrap_or_default();
                         Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
                     }
                 });
@@ -90,7 +92,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             let genius_id = song.genius_id.clone();
             orders.perform_cmd({
                 async move {
-                    let l = api_call::get_leaderboards(&genius_id).await.unwrap_or_default();
+                    let l = api_call::get_leaderboards(&genius_id)
+                        .await
+                        .unwrap_or_default();
                     Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
                 }
             });
