@@ -3,6 +3,12 @@ use unicode_normalization::UnicodeNormalization;
 
 use crate::*;
 
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SongRequest {
+    pub title: String,
+    pub artist: String,
+}
+
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum TestMode {
     Simple,
@@ -13,12 +19,6 @@ pub enum TestMode {
 pub struct Tests {
     pub simple: Lyrics,
     pub standard: Lyrics,
-}
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct Leaderboards {
-    pub simple: Vec<ScoreRecord>,
-    pub standard: Vec<ScoreRecord>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
