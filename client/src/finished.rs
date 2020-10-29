@@ -75,16 +75,16 @@ pub fn view(model: &Model) -> Node<Msg> {
             div![
                 C!["stats"],
                 div![
-                    div![C!["value"], time],
-                    "time",
+                    div![C!["value"], wpm],
+                    div!["wpm"],
                 ],
                 div![
-                    div![C!["value"], wpm],
-                    "wpm",
+                    div![C!["value"], time],
+                    div!["time"],
                 ],
             ],
         ],
-        form![
+        div![
             C!["name-submission"],
             input![
                 attrs!(

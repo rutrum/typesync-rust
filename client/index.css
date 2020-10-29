@@ -292,7 +292,7 @@ table {
   box-shadow: 0 5px 5px 5px lightgrey;
   width: 600px;
   margin: 15px auto;
-  padding: 10px;
+  padding: 15px 0;
 }
 .finished .results .victory-message {
   font-size: 3em;
@@ -306,12 +306,13 @@ table {
   flex-direction: row;
   justify-content: space-around;
 }
-.finished .results .stats .stat {
+.finished .results .stats div {
   display: flex;
+  flex-direction: column;
   height: 140px;
 }
-.finished .results .stats .stat .value {
-  font-size: 4em;
+.finished .results .stats div .value {
+  font-size: 2em;
   font-weight: 600;
 }
 .finished .name-submission {
@@ -319,7 +320,7 @@ table {
   display: flex;
   justify-content: space-between;
   width: 600px;
-  margin: 15px auto;
+  margin: 0 auto;
 }
 .finished .name-submission * {
   font-size: 22px;
