@@ -18,3 +18,26 @@ body {
     padding: 0;
     font-family: sans-serif;
 }
+
+$difficulty_colors: (
+    "Novice": #77EB34,
+    "Apprentice": #DFEB34,
+    "Adept": #EB9634,
+    "Expert": #DB2E2E,
+    "Master": #5C160B,
+);
+
+@each $difficulty, $color in $difficulty_colors {
+    .difficulty.#{$difficulty} {
+        color: $color;
+    }
+
+    .go.#{$difficulty} {
+        background-color: $color;
+    }
+
+    .mode.selected.#{$difficulty} {
+        border-color: $color;
+    }
+}
+

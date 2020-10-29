@@ -42,6 +42,15 @@ fn start_test(ev: Event) -> Msg {
     Msg::StartTest
 }
 
+fn get_difficulty_class(model: &Model) -> Option<String> {
+    if let (Some(mode), Some(song)) = (&model.mode, &model.song) {
+        let l = song.lyrics(*mode);
+        Some(format!("{:?}", l.difficulty))
+    } else {
+        None
+    }
+}
+
 pub fn view(model: &Model) -> Node<Msg> {
     match &model.song {
         Some(song) => div![
@@ -58,12 +67,13 @@ pub fn view(model: &Model) -> Node<Msg> {
                     ],
                     form![
                         C!["modes"],
-                        test_mode_view(TestMode::Standard, &song.tests.standard),
-                        test_mode_view(TestMode::Simple, &song.tests.simple),
+                        test_mode_view(&model.mode, TestMode::Standard, &song.tests.standard),
+                        test_mode_view(&model.mode, TestMode::Simple, &song.tests.simple),
                     ],
                 ],
                 div![
                     C!["go"],
+                    C![get_difficulty_class(&model)],
                     IF!(model.mode.is_some() => C!["appear"]),
                     IF!(model.mode.is_none() => C!["disappear"]),
                     ev(Ev::Click, start_test),
@@ -113,14 +123,25 @@ fn leaderboard_view(leaderboard: &[Score], mode: TestMode) -> Node<Msg> {
     ]
 }
 
-fn test_mode_view(mode: TestMode, lyrics: &Lyrics) -> Node<Msg> {
+fn test_mode_view(selected: &Option<TestMode>, mode: TestMode, lyrics: &Lyrics) -> Node<Msg> {
+    let is_selected = if let Some(smode) = selected {
+        smode == &mode
+    } else {
+        false
+    };
+    log!("is selected: ", is_selected);
+
     label![
         ev(Ev::Click, move |_| Msg::UpdateMode(mode)),
         C!["mode"],
+        C![format!("{:?}", lyrics.difficulty)],
+        IF!(is_selected => C!["selected"]),
+
         input![attrs!(At::Type => "radio", At::Name => "mode", At::Value => format!("{:?}", mode)),],
         div![format!("{:?}", mode)],
         div![
             C!["difficulty"],
+            C![format!("{:?}", lyrics.difficulty)],
             format!("{:?}", lyrics.difficulty),
         ],
         div![

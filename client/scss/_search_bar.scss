@@ -17,8 +17,8 @@
     }
 
     input {
+        @include underline;
         display: block;
-        border-bottom: 2px solid darkgrey;
         flex-grow: 10;
 
         &:focus {

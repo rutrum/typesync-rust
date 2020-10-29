@@ -173,7 +173,11 @@ fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
             ],
             div![
                 p![C!["mode"], format!("{:?}", mode)],
-                p![C!["difficulty"], format!("{:?}", &song.lyrics(mode).difficulty)],
+                p![
+                    C!["difficulty"], 
+                    C![format!("{:?}", song.lyrics(mode).difficulty)],
+                    format!("{:?}", &song.lyrics(mode).difficulty)
+                ],
             ],
             div![C!["timer"], timer],
         ]

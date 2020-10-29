@@ -6,5 +6,9 @@
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
+@mixin underline {
+    border-bottom: 2px solid darkgrey;
+}
+
 $wide: 800px;
 $narrow: 600px;

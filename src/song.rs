@@ -9,7 +9,7 @@ pub struct SongRequest {
     pub artist: String,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub enum TestMode {
     Simple,
     Standard,
