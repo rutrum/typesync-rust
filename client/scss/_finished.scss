@@ -1,0 +1,63 @@
+@import 'all';
+
+.finished {
+    display: flex;
+    flex-direction: column;
+
+    .results {
+        @include shadow;
+        width: $narrow;
+        margin: 15px auto;
+        padding: 10px;
+
+        .victory-message {
+            font-size: 3em;
+            font-weight: 600;
+            letter-spacing: 4px;
+            padding: 15px;
+        }
+
+        .stats {
+            font-size: 2em;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+
+            .stat {
+                display: flex;
+                height: 140px;
+
+                .value {
+                    font-size: 4em;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+
+    .name-submission {
+        @include shadow;
+
+        display: flex;
+        justify-content: space-between;
+
+        width: $narrow;
+        margin: 15px auto;
+        
+        * {
+            font-size: 22px;
+            margin: 15px;
+            width: 20px;
+        }
+
+        input {
+            border-bottom: 2px solid darkgrey;
+            width: 100%;
+            font-size: 22px;
+        }
+
+        button {
+            width: 200px;
+        }
+    }
+}

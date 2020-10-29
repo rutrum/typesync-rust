@@ -1,0 +1,32 @@
+@import 'all';
+
+.typing-test {
+    max-width: $wide;
+
+    input {
+        padding: 0 70px;
+        font-style: italic;
+        height: 100px;
+        font-size: 28pt;
+
+        //&.good, &:focus.good {
+        //    color: #000000;
+        //}
+
+        &.bad, &:focus.bad {
+            color: #ff0000;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .lyrics {
+        div {
+            font-size: 2em;
+            padding: 10px 20px;
+            font-weight: 300;
+        }
+    }
+}

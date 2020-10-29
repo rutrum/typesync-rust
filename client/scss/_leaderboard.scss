@@ -1,0 +1,21 @@
+@import 'all';
+
+.leaderboard {
+    @include shadow;
+
+    margin: 25px auto;
+    width: $narrow;
+    padding: 10px;
+
+    th {
+        font-weight: 600;
+    }
+
+    td, th {
+        padding: 5px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #eee;
+    }
+}

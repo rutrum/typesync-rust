@@ -23,10 +23,16 @@ api:
     cargo run -p api --bin api
 
 watch-api:
-    watchexec -w api/src --force-poll 500 -- just api
+    watchexec -w api/src -- just api
 
 fmt:
     cargo fmt
 
 watch-check:
     watchexec -- cargo check --workspace
+
+css:
+    (cd client; grass scss/index.scss > index.css)
+
+watch-css:
+    watchexec -w client/scss -- just css

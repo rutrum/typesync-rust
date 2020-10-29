@@ -1,0 +1,10 @@
+@mixin shadow {
+    box-shadow: 0 5px 5px 5px lightgrey;
+}
+
+@mixin default-font {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+$wide: 800px;
+$narrow: 600px;

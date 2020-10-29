@@ -13,6 +13,8 @@ pub struct Model {
 
 pub fn init() -> Model {
     Model {
+        title: "you suffer".to_string(),
+        artist: "napalm death".to_string(),
         searching: false,
         ..Default::default()
     }
@@ -53,7 +55,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
 
 pub fn view(model: &Model) -> Node<Msg> {
     form![
-        C!["search-box"],
+        C!["search-bar"],
         title_input(),
         artist_input(),
         submit_button(model),
@@ -71,6 +73,7 @@ fn title_input() -> Node<Msg> {
             At::Name => "title",
             At::AutoFocus => AtValue::None, // causes warning
             At::Placeholder => "Song Title",
+            At::Value => "you suffer",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();
@@ -89,6 +92,7 @@ fn artist_input() -> Node<Msg> {
             At::Type => "text",
             At::Name => "title",
             At::Placeholder => "Artist Name",
+            At::Value => "napalm death",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();

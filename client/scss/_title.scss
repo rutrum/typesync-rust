@@ -1,0 +1,30 @@
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    letter-spacing: .3em;
+    font-size: 5em;
+    height: 2.5em;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    color: white;
+    background: linear-gradient(-30deg, #946a90, #ff5898, #ff5151, #f88e5d, #966b92);
+    background-size: 300% 300%;
+    animation: gradient 30s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}

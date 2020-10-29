@@ -136,6 +136,7 @@ pub fn view(model: &Model) -> Node<Msg> {
     let percentage = total_typed as f32 / model.total_chars as f32;
 
     div![
+        C!["typing-test"],
         small_song_view(&model.song, model.mode, timer),
         input![
             attrs! {
@@ -151,8 +152,9 @@ pub fn view(model: &Model) -> Node<Msg> {
         ],
         progress_bar_view(percentage),
         div![
-            div![id!["top-line"], model.this_lyric()],
-            div![id!["bot-line"], model.next_lyric()],
+            C!["lyrics"],
+            div![C!["top-line"], model.this_lyric()],
+            div![C!["bot-line"], model.next_lyric()],
         ],
     ]
 }
@@ -161,18 +163,20 @@ fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
     div![
         C!["small-song"],
         img![
-            attrs!("alt" => "album art", "src" => song.img_url),
-            style!("width" => "100px", "height" => "100px"),
+            attrs!(At::Alt => "album art", At::Src => song.img_url),
         ],
         div![
-            h1![id!["song-title"], &song.title],
-            h2![id!["song-artist"], &song.artist],
-        ],
-        div![
-            p![id!["mode"], format!("{:?}", mode)],
-            p![id!["diff"], format!("{:?}", &song.lyrics(mode).difficulty)],
-        ],
-        div![timer],
+            C!["details"],
+            div![
+                h1![C!["song-title"], &song.title],
+                h2![C!["song-artist"], &song.artist],
+            ],
+            div![
+                p![C!["mode"], format!("{:?}", mode)],
+                p![C!["difficulty"], format!("{:?}", &song.lyrics(mode).difficulty)],
+            ],
+            div![C!["timer"], timer],
+        ]
     ]
 }
 

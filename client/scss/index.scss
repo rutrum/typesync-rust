@@ -1,0 +1,20 @@
+@import "_reset";
+
+@import "_title";
+@import "_search_bar";
+@import "_song_summary";
+@import "_leaderboard";
+@import "_typing_test";
+@import "_finished";
+
+* {
+    border: 0 solid black;
+}
+
+body {
+    text-align: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}

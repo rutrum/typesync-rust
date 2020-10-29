@@ -54,7 +54,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             model.search_bar.searching = false;
             if let Some(song) = maybe_song.as_ref() {
                 let genius_id = song.genius_id.clone();
-                log!("Found ", genius_id);
                 orders.perform_cmd({
                     async move {
                         let l = api_call::get_leaderboards(&genius_id)

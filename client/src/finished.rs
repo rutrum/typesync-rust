@@ -1,4 +1,3 @@
-//use chrono::Utc;
 use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{NewScore, Song, TestMode};
@@ -69,18 +68,34 @@ pub fn view(model: &Model) -> Node<Msg> {
     let wpm = format!("{:.*}", 1, model.wpm);
 
     div![
-        h2!["Finished!"],
-        p![format!("{} seconds", time)],
-        p![format!("{} wmp", wpm)],
-        input![
-            attrs!(
-                At::Type => "text",
-                At::AutoComplete => "off",
-                At::Placeholder => "Enter your name:",
-            ),
-            input_ev(Ev::Input, Msg::UpdateName)
+        C!["finished"],
+        div![
+            C!["results"],
+            h2![C!["victory-message"], "Finished!"],
+            div![
+                C!["stats"],
+                div![
+                    div![C!["value"], time],
+                    "time",
+                ],
+                div![
+                    div![C!["value"], wpm],
+                    "wpm",
+                ],
+            ],
         ],
-        button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
+        form![
+            C!["name-submission"],
+            input![
+                attrs!(
+                    At::Type => "text",
+                    At::AutoComplete => "off",
+                    At::Placeholder => "Enter your name:",
+                ),
+                input_ev(Ev::Input, Msg::UpdateName)
+            ],
+            button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
+        ],
         p![if model.failed {
             "Failed to submit. Try again."
         } else {

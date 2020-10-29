@@ -45,22 +45,29 @@ fn start_test(ev: Event) -> Msg {
 pub fn view(model: &Model) -> Node<Msg> {
     match &model.song {
         Some(song) => div![
-            C!["song-summary"],
-            img![
-                attrs!("alt" => "album art", "src" => song.img_url),
-                style!("width" => "100px", "height" => "100px"),
-            ],
             div![
-                C!["details"],
-                div![
-                    h1![id!["song-title"], &song.title],
-                    h2![id!["song-artist"], &song.artist],
+                C!["song-summary"],
+                img![
+                    attrs!("alt" => "album art", "src" => song.img_url),
                 ],
-                form![
-                    C!["modes"],
-                    test_mode_view(TestMode::Standard, &song.tests.standard),
-                    test_mode_view(TestMode::Simple, &song.tests.simple),
-                    IF!(model.mode.is_some() => button![ev(Ev::Click, start_test), "Start!"])
+                div![
+                    C!["details"],
+                    div![
+                        h1![C!["song-title"], &song.title],
+                        h2![C!["song-artist"], &song.artist],
+                    ],
+                    form![
+                        C!["modes"],
+                        test_mode_view(TestMode::Standard, &song.tests.standard),
+                        test_mode_view(TestMode::Simple, &song.tests.simple),
+                    ],
+                ],
+                div![
+                    C!["go"],
+                    IF!(model.mode.is_some() => C!["appear"]),
+                    IF!(model.mode.is_none() => C!["disappear"]),
+                    ev(Ev::Click, start_test),
+                    "Start!",
                 ],
             ],
             leaderboard_view(&model.leaderboards.standard, TestMode::Standard),
@@ -85,6 +92,7 @@ fn no_song_view() -> Node<Msg> {
 fn leaderboard_view(leaderboard: &[Score], mode: TestMode) -> Node<Msg> {
     let title = format!("{:?}", mode);
     table![
+        C!["leaderboard"],
         tr![th![attrs!(At::ColSpan => 4), &title],],
         IF!(leaderboard.is_empty() =>
             tr![td![attrs!(At::ColSpan => 4), format!(
@@ -109,9 +117,12 @@ fn test_mode_view(mode: TestMode, lyrics: &Lyrics) -> Node<Msg> {
     label![
         ev(Ev::Click, move |_| Msg::UpdateMode(mode)),
         C!["mode"],
-        input![attrs!("type" => "radio", "name" => "mode", "value" => format!("{:?}", mode)),],
+        input![attrs!(At::Type => "radio", At::Name => "mode", At::Value => format!("{:?}", mode)),],
         div![format!("{:?}", mode)],
-        div![format!("{:?}", lyrics.difficulty)],
+        div![
+            C!["difficulty"],
+            format!("{:?}", lyrics.difficulty),
+        ],
         div![
             C!["stats"],
             div![format!("{} chars", lyrics.stats.total)],
