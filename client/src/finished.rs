@@ -67,8 +67,12 @@ pub fn view(model: &Model) -> Node<Msg> {
     let time = format!("{:.*}", 2, model.time.as_millis() as f32 / 1000.0);
     let wpm = format!("{:.*}", 1, model.wpm);
 
-    div![
+    form![
         C!["finished"],
+        ev(Ev::Submit, |ev| {
+            ev.prevent_default();
+            Msg::Submit
+        }),
         div![
             C!["results"],
             h2![C!["victory-message"], "Finished!"],
@@ -94,7 +98,10 @@ pub fn view(model: &Model) -> Node<Msg> {
                 ),
                 input_ev(Ev::Input, Msg::UpdateName)
             ],
-            button!["Submit", ev(Ev::Click, |_| Msg::Submit)],
+            button![
+                "Submit", 
+                attrs!(At::Type => "submit"),
+            ],
         ],
         p![if model.failed {
             "Failed to submit. Try again."

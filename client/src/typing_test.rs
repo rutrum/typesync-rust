@@ -24,7 +24,7 @@ impl Model {
 
     fn advance_lyric(&mut self) {
         self.lyric_num += 1;
-        self.typed_chars += self.buffer.len();
+        self.typed_chars += self.buffer.len() + 1;
         self.buffer.clear();
     }
 
@@ -40,7 +40,7 @@ impl Model {
         self.buffer = s;
         self.accurate = match self.this_lyric() {
             None => false,
-            Some(lyric) => &self.buffer == lyric,
+            Some(lyric) => lyric.starts_with(&self.buffer),
         }
     }
 
@@ -53,6 +53,13 @@ impl Model {
         match self.this_lyric() {
             None => false,
             Some(lyric) => &after == lyric,
+        }
+    }
+
+    fn does_match(&self) -> bool {
+        match self.this_lyric() {
+            None => false,
+            Some(lyric) => &self.buffer == lyric,
         }
     }
 }
@@ -87,7 +94,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
                 orders.send_msg(SuperMsg::TypingTest(Msg::Tick));
             }
 
-            let line_complete = model.accurate && (key == " " || key == "Enter");
+            let line_complete = model.does_match() && (key == " " || key == "Enter");
             let final_line_complete = model.on_last_lyric() && model.will_match_lyric(&key);
 
             if line_complete || final_line_complete {
@@ -133,7 +140,10 @@ pub fn view(model: &Model) -> Node<Msg> {
     use chrono::Utc;
     let _dt = DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(61, 0), Utc);
     let total_typed = model.typed_chars + model.buffer.len();
-    let percentage = total_typed as f32 / model.total_chars as f32;
+    let percentage = {
+        let p = total_typed as f32 / model.total_chars as f32 * 100.0;
+        if p < 100.0 { p } else { 100.0 }
+    };
 
     div![
         C!["typing-test"],
@@ -145,10 +155,12 @@ pub fn view(model: &Model) -> Node<Msg> {
                 At::AutoFocus => AtValue::None,
                 At::Placeholder => "Type to begin...",
                 At::Value => model.buffer,
+                At::SpellCheck => "false",
             },
             C![if model.accurate { "good" } else { "bad" }],
             keyboard_ev(Ev::KeyPress, |ev| Msg::KeyPress(ev.key())), // fires first
             input_ev(Ev::Input, Msg::InputChange),                   // fires second
+            ev(Ev::Paste, |ev| ev.prevent_default()),
         ],
         progress_bar_view(percentage),
         div![
@@ -185,5 +197,11 @@ fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
 }
 
 fn progress_bar_view(percentage: f32) -> Node<Msg> {
-    div![format!("{}", percentage),]
+    div![
+        C!["progress-bar"],
+        div![
+            C!["filler"],
+            style!{ "width" => format!("{}%", percentage) },
+        ]
+    ]
 }

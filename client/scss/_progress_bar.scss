@@ -1,0 +1,18 @@
+@import 'all';
+
+.progress-bar {
+    position: relative;
+    bottom: 10px;
+
+    height: 10px;
+    width: 100%;
+
+    border-radius: 5px;
+    border: 1px solid #333;
+
+    .filler {
+        @include rainbow;
+        height: 100%;
+        border-radius: 4px;
+    }
+}

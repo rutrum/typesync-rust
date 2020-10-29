@@ -129,7 +129,6 @@ fn test_mode_view(selected: &Option<TestMode>, mode: TestMode, lyrics: &Lyrics) 
     } else {
         false
     };
-    log!("is selected: ", is_selected);
 
     label![
         ev(Ev::Click, move |_| Msg::UpdateMode(mode)),

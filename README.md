@@ -16,7 +16,7 @@ There are still features in the original version of the site that need to be rew
 - [x] Disallow user from starting song without selecting mode
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
 - [x] Save current time at score submission using web-sys
-- [ ] Polish
+- [x] Polish
 
 ## Things to clean
 

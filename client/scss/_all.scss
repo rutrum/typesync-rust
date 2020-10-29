@@ -10,5 +10,11 @@
     border-bottom: 2px solid darkgrey;
 }
 
+@mixin rainbow {
+    background: linear-gradient(-30deg, #946a90, #ff5898, #ff5151, #f88e5d);
+    background-size: 300% 300%;
+    animation: gradient 30s ease infinite;
+}
+
 $wide: 800px;
 $narrow: 600px;

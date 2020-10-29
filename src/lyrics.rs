@@ -39,7 +39,7 @@ pub struct LyricsStats {
 
 impl LyricsStats {
     pub fn from_lyrics(lyrics: &[String]) -> LyricsStats {
-        let total = lyrics.iter().fold(0, |acc, s| acc + s.len());
+        let total = lyrics.iter().fold(0, |acc, s| acc + s.len() + 1) - 1;
 
         let mut stats = LyricsStats {
             total,
