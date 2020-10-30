@@ -95,6 +95,7 @@ pub fn view(model: &Model) -> Node<Msg> {
                     At::Type => "text",
                     At::AutoComplete => "off",
                     At::Placeholder => "Enter your name:",
+                    At::Required => "true",
                 ),
                 input_ev(Ev::Input, Msg::UpdateName)
             ],

@@ -8,6 +8,10 @@
 
 @mixin underline {
     border-bottom: 2px solid darkgrey;
+
+    &:focus {
+        outline: none;
+    }
 }
 
 @mixin rainbow {

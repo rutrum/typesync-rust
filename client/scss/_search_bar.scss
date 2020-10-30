@@ -20,10 +20,6 @@
         @include underline;
         display: block;
         flex-grow: 10;
-
-        &:focus {
-            outline: none;
-        }
     }
 
     button {

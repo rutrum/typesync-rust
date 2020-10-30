@@ -19,7 +19,9 @@ use api::DbPool;
 
 use std::sync::Mutex;
 
-type SongCache = Mutex<LruCache<SongRequest, Song>>;
+type GeniusId = String;
+type SongCache = Mutex<LruCache<GeniusId, Song>>;
+type GeniusIdCache = Mutex<LruCache<SongRequest, GeniusId>>;
 
 #[post("/score", data = "<record>")]
 fn save_score(conn: DbPool, record: Json<NewScore>) -> Status {
@@ -32,36 +34,20 @@ fn save_score(conn: DbPool, record: Json<NewScore>) -> Status {
 }
 
 #[get("/lyrics/<genius_id>")]
-fn song_by_id(_state: State<SongCache>, genius_id: String) -> Json<Option<Song>> {
+fn song_by_id(state: State<SongCache>, genius_id: String) -> Json<Option<Song>> {
     println!("Searching for song with id {}", genius_id);
-
-    //let mut cache = state.lock().unwrap();
-
-    let song = genius::search_song_with_genius_id(&genius_id);
-    println!("{:?}", song);
-    match song {
-        Err(_) => Json(None),
-        Ok(song) => {
-            println!("Found \"{}\" by {}", song.title, song.artist);
-            Json(Some(song))
-        }
-    }
-}
-
-#[post("/lyrics", data = "<request>")]
-fn song_request(state: State<SongCache>, request: Json<SongRequest>) -> Json<Option<Song>> {
-    let sr = request.into_inner();
-    println!("Searching \"{}\" by {}", sr.title, sr.artist);
 
     let mut cache = state.lock().unwrap();
 
-    match cache.peek(&sr) {
+    match cache.peek(&genius_id) {
         None => {
-            let song = genius::search_song_on_genius(&sr);
+            let song = genius::search_song_with_genius_id(&genius_id);
+            println!("{:?}", song);
             match song {
                 Err(_) => Json(None),
                 Ok(song) => {
-                    cache.put(sr.clone(), song.clone());
+                    cache.put(song.genius_id.clone(), song.clone());
+
                     println!("Found \"{}\" by {}", song.title, song.artist);
                     Json(Some(song))
                 }
@@ -70,6 +56,50 @@ fn song_request(state: State<SongCache>, request: Json<SongRequest>) -> Json<Opt
         Some(song) => {
             println!("Found cached \"{}\" by {}", song.title, song.artist);
             Json(Some(song.clone()))
+        }
+    }
+}
+
+#[post("/lyrics", data = "<request>")]
+fn song_request(song_state: State<SongCache>, id_state: State<GeniusIdCache>, request: Json<SongRequest>) -> Json<Option<Song>> {
+    let sr = request.into_inner();
+    println!("Searching \"{}\" by {}", sr.title, sr.artist);
+
+    let mut id_cache = id_state.lock().unwrap();
+    let mut song_cache = song_state.lock().unwrap();
+
+    match id_cache.peek(&sr) {
+        None => {
+            let song = genius::search_song_on_genius(&sr);
+            match song {
+                Err(_) => Json(None),
+                Ok(song) => {
+                    id_cache.put(sr.clone(), song.genius_id.clone());
+                    song_cache.put(song.genius_id.clone(), song.clone());
+
+                    println!("Found \"{}\" by {}", song.title, song.artist);
+                    Json(Some(song))
+                }
+            }
+        }
+        Some(genius_id) => {
+            match song_cache.peek(genius_id) {
+                None => {
+                    let song = genius::search_song_with_genius_id(&genius_id);
+                    println!("{:?}", song);
+                    match song {
+                        Err(_) => Json(None),
+                        Ok(song) => {
+                            println!("Found \"{}\" by {}", song.title, song.artist);
+                            Json(Some(song))
+                        }
+                    }
+                }
+                Some(song) => {
+                    println!("Found cached \"{}\" by {}", song.title, song.artist);
+                    Json(Some(song.clone()))
+                }
+            }
         }
     }
 }
@@ -86,11 +116,13 @@ fn main() -> Result<(), Error> {
     }
     .to_cors()?;
 
-    let cache: SongCache = Mutex::new(LruCache::new(100));
+    let song_cache: SongCache = Mutex::new(LruCache::new(100));
+    let id_cache: GeniusIdCache = Mutex::new(LruCache::new(100));
 
     rocket::ignite()
         .mount("/", routes![song_request, song_by_id, save_score, fetch_leaderboards])
-        .manage(cache)
+        .manage(song_cache)
+        .manage(id_cache)
         .attach(cors)
         .attach(DbPool::fairing())
         .launch();
