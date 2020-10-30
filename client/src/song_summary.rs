@@ -71,20 +71,29 @@ pub fn view(model: &Model) -> Node<Msg> {
                         test_mode_view(&model.mode, TestMode::Simple, &song.tests.simple),
                     ],
                 ],
-                div![
-                    C!["go"],
-                    C![get_difficulty_class(&model)],
-                    IF!(model.mode.is_some() => C!["appear"]),
-                    IF!(model.mode.is_none() => C!["disappear"]),
-                    ev(Ev::Click, start_test),
-                    "Start!",
-                ],
+                go_button(model),
             ],
             leaderboard_view(&model.leaderboards.standard, TestMode::Standard),
             leaderboard_view(&model.leaderboards.simple, TestMode::Simple),
         ],
         None => no_song_view(),
     }
+}
+
+fn go_button(model: &Model) -> Node<Msg> {
+    div![
+        C!["go"],
+        C![get_difficulty_class(&model)],
+        IF!(model.mode.is_some() => C!["appear"]),
+        IF!(model.mode.is_none() => C!["disappear"]),
+
+        ev(Ev::Click, start_test),
+        "Start!",
+        div![
+            C!["go-arrowhead"],
+            C![get_difficulty_class(&model)],
+        ],
+    ]
 }
 
 fn no_song_view() -> Node<Msg> {

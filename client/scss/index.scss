@@ -37,7 +37,7 @@ $difficulty_colors: (
         background-color: $color;
     }
 
-    .mode.selected.#{$difficulty} {
+    .mode.selected.#{$difficulty}, .go-arrowhead.#{$difficulty} {
         border-color: $color;
     }
 }

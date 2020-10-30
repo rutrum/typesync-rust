@@ -76,7 +76,7 @@
     .go {
         @include default-font;
 
-        width: 100px;
+        width: 180px;
         height: 40px;
 
         position: relative;
@@ -88,9 +88,30 @@
         font-style: italic;
         font-weight: 900;
         font-size: 20px;
-        line-height: 30px;
+        line-height: 38px;
 
         cursor: pointer;
+
+        &:hover {
+            transition-duration: 300ms;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .go-arrowhead {
+            box-sizing: content-box;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 32px;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            border-right-color: transparent;
+            
+            position: relative;
+            left: 90px;
+            bottom: 50px;
+        }
     }
 
     .appear {
