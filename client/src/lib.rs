@@ -23,9 +23,33 @@ pub struct Model {
     search_bar: search_bar::Model,
 }
 
-fn init(_url: Url, _orders: &mut impl Orders<Msg>) -> Model {
+fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    orders.subscribe(|subs::UrlChanged(url)| log!(url));
+
+    log!(url);
+
+    let page = match url.remaining_hash_path_parts().as_slice() {
+        [] => Page::Home,
+        ["song", id] => {
+            log!(id);
+            let gid: String = id.to_owned().to_string();
+            orders.perform_cmd({
+                async move {
+                    Msg::FoundSong(
+                        api_call::get_song_from_id(&gid)
+                            .await
+                            .ok()
+                            .flatten()
+                    )
+                }
+            });
+            Page::Home
+        }
+        _ => Page::Home,
+    };
+
     Model {
-        page: Page::Home,
+        page,
         search_bar: search_bar::init(),
     }
 }
@@ -54,6 +78,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             model.search_bar.searching = false;
             if let Some(song) = maybe_song.as_ref() {
                 let genius_id = song.genius_id.clone();
+
+                Url::new().set_hash(format!("/song/{}", genius_id)).go_and_push();
+
                 orders.perform_cmd({
                     async move {
                         let l = api_call::get_leaderboards(&genius_id)

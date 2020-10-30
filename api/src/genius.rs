@@ -22,6 +22,23 @@ pub enum GeniusError {
     WebScrape,
 }
 
+pub fn search_song_with_genius_id(genius_id: &str) -> Result<Song, GeniusError> {
+    use GeniusError::*;
+
+    let text = query_genius_id(&genius_id).map_err(|_| ApiFetch)?;
+    let song_scrape = json_to_song(&text).ok_or(ApiScrape)?;
+    let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
+    let raw_lyrics = scrape_for_lyrics(&raw_html).ok_or(WebScrape)?;
+
+    Ok(Song::new(
+        song_scrape.title,
+        song_scrape.artist,
+        raw_lyrics,
+        song_scrape.img_url,
+        song_scrape.genius_id,
+    ))
+}
+
 pub fn search_song_on_genius(sr: &SongRequest) -> Result<Song, GeniusError> {
     use GeniusError::*;
 
@@ -78,6 +95,20 @@ fn json_to_song(text: &str) -> Option<SongScrape> {
         img_url,
         genius_id,
     })
+}
+
+fn query_genius_id(id: &str) -> reqwest::Result<String> {
+    let client = reqwest::blocking::Client::new();
+    let url = Url::parse(
+        &format!("https://api.genius.com/songs/{}", id)
+    )
+    .unwrap();
+
+    client
+        .get(url)
+        .bearer_auth("rk7Bf0CVL9lOWaEaxZnrOTIiAp2qXwMaKfJfWd3XPoLGGxAgJWz1zl1dwwgoCz17")
+        .send()?
+        .text()
 }
 
 fn query_genius_search(title: &str, artist: &str) -> reqwest::Result<String> {

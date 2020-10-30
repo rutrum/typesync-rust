@@ -1,6 +1,13 @@
 use seed::prelude::*;
 use typesync::{Leaderboards, NewScore, Song, SongRequest};
 
+pub async fn get_song_from_id(genius_id: &str) -> fetch::Result<Option<Song>> {
+    fetch(format!("http://localhost:8000/lyrics/{}", genius_id))
+        .await?
+        .json()
+        .await
+}
+
 pub async fn post_score(score: NewScore) -> fetch::Result<Response> {
     fetch::Request::new("http://localhost:8000/score")
         .method(Method::Post)

@@ -31,6 +31,22 @@ fn save_score(conn: DbPool, record: Json<NewScore>) -> Status {
     }
 }
 
+#[get("/lyrics/<genius_id>")]
+fn song_by_id(_state: State<SongCache>, genius_id: String) -> Json<Option<Song>> {
+    println!("Searching for song with id {}", genius_id);
+
+    //let mut cache = state.lock().unwrap();
+
+    let song = genius::search_song_with_genius_id(&genius_id);
+    match song {
+        Err(_) => Json(None),
+        Ok(song) => {
+            println!("Found \"{}\" by {}", song.title, song.artist);
+            Json(Some(song))
+        }
+    }
+}
+
 #[post("/lyrics", data = "<request>")]
 fn song_request(state: State<SongCache>, request: Json<SongRequest>) -> Json<Option<Song>> {
     let sr = request.into_inner();
@@ -72,7 +88,7 @@ fn main() -> Result<(), Error> {
     let cache: SongCache = Mutex::new(LruCache::new(100));
 
     rocket::ignite()
-        .mount("/", routes![song_request, save_score, fetch_leaderboards])
+        .mount("/", routes![song_request, song_by_id, save_score, fetch_leaderboards])
         .manage(cache)
         .attach(cors)
         .attach(DbPool::fairing())
