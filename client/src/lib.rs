@@ -75,7 +75,7 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
             Page::Home
         }
         _ => {
-			Url::new().go_and_push();
+			Url::new().go_and_replace();
 			Page::Home
 		}
     };
@@ -124,7 +124,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                     }
                 });
             } else {
-                //Url::new().go_and_push();
+                Url::new().go_and_replace();
 			}
             model.page = Page::Summary(song_summary::init(maybe_song));
         }
@@ -136,6 +136,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::MaybeStartTest(maybesong, mode) => {
             if let Some(song) = maybesong {
                 model.page = Page::Test(typing_test::init(song, mode));
+            } else {
+                //Url::new().go_and_replace();
             }
         }
         Msg::StartTest(song, mode) => {
@@ -148,7 +150,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             }
         }
         Msg::TestDone(song, mode, time, wpm) => {
-			Url::new().set_path(&["song", &song.genius_id]).go_and_push();
             model.page = Page::Finish(finished::init(time, wpm, song, mode));
         }
         Msg::Finished(msg) => {
@@ -166,6 +167,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                     Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
                 }
             });
+            Url::new().set_path(&["song", &song.genius_id]).go_and_push();
             model.page = Page::Summary(song_summary::init(Some(song)));
         }
         Msg::ChangePage(page) => model.page = page,

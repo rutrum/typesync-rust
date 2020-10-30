@@ -7,7 +7,7 @@ use crate::Msg as SuperMsg;
 
 #[derive(Clone, Debug)]
 pub struct Model {
-    song: Song,
+    pub song: Song,
     name: String,
     time: Duration,
     wpm: f32,
