@@ -28,7 +28,7 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
 
     log!(url);
 
-    let page = match url.remaining_hash_path_parts().as_slice() {
+    let page = match url.remaining_path_parts().as_slice() {
         [] => Page::Home,
         ["song", id, rest @ ..] => {
             let gid: String = id.to_owned().to_string();
@@ -74,7 +74,10 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
             }
             Page::Home
         }
-        _ => Page::Home,
+        _ => {
+			Url::new().go_and_push();
+			Page::Home
+		}
     };
 
     Model {
@@ -110,7 +113,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             if let Some(song) = maybe_song.as_ref() {
                 let genius_id = song.genius_id.clone();
 
-                Url::new().set_hash(format!("/song/{}", genius_id)).go_and_push();
+                Url::new().set_path(&["song", &genius_id]).go_and_push();
 
                 orders.perform_cmd({
                     async move {
@@ -120,7 +123,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                         Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
                     }
                 });
-            }
+            } else {
+                //Url::new().go_and_push();
+			}
             model.page = Page::Summary(song_summary::init(maybe_song));
         }
         Msg::Summary(msg) => {
@@ -134,16 +139,16 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             }
         }
         Msg::StartTest(song, mode) => {
-            Url::current().add_hash_path_part(format!("{:?}", mode).to_lowercase()).go_and_push();
+            Url::current().add_path_part(mode.to_lowercase()).go_and_push();
             model.page = Page::Test(typing_test::init(song, mode));
         }
         Msg::TypingTest(msg) => {
-            // event does nothing if page is not test
             if let Page::Test(typing_test_model) = &mut model.page {
                 typing_test::update(msg, typing_test_model, orders);
             }
         }
         Msg::TestDone(song, mode, time, wpm) => {
+			Url::new().set_path(&["song", &song.genius_id]).go_and_push();
             model.page = Page::Finish(finished::init(time, wpm, song, mode));
         }
         Msg::Finished(msg) => {

@@ -22,6 +22,14 @@ impl TestMode {
             TestMode::Simple => 1,
         }
     }
+
+    pub fn to_lowercase(&self) -> String {
+        format!("{:?}", self).to_lowercase()
+    }
+
+    pub fn to_string(&self) -> String {
+        format!("{:?}", self)
+    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
