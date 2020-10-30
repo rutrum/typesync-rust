@@ -26,7 +26,7 @@ pub fn search_song_with_genius_id(genius_id: &str) -> Result<Song, GeniusError> 
     use GeniusError::*;
 
     let text = query_genius_id(&genius_id).map_err(|_| ApiFetch)?;
-    let song_scrape = json_to_song(&text).ok_or(ApiScrape)?;
+    let song_scrape = json_to_song(&text, false).ok_or(ApiScrape)?;
     let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
     let raw_lyrics = scrape_for_lyrics(&raw_html).ok_or(WebScrape)?;
 
@@ -43,7 +43,7 @@ pub fn search_song_on_genius(sr: &SongRequest) -> Result<Song, GeniusError> {
     use GeniusError::*;
 
     let text = query_genius_search(&sr.title, &sr.artist).map_err(|_| ApiFetch)?;
-    let song_scrape = json_to_song(&text).ok_or(ApiScrape)?;
+    let song_scrape = json_to_song(&text, true).ok_or(ApiScrape)?;
     let raw_html = query_genius_lyrics_page(&song_scrape.lyrics_route).map_err(|_| WebFetch)?;
     let raw_lyrics = scrape_for_lyrics(&raw_html).ok_or(WebScrape)?;
 
@@ -73,10 +73,14 @@ fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
         .text()
 }
 
-fn json_to_song(text: &str) -> Option<SongScrape> {
+fn json_to_song(text: &str, many: bool) -> Option<SongScrape> {
     let json: Value = serde_json::from_str(&text).unwrap();
 
-    let metadata = json.get("response")?.get("hits")?.get(0)?.get("result")?;
+    let metadata = if many {
+        json.get("response")?.get("hits")?.get(0)?.get("result")?
+    } else {
+        json.get("response")?.get("song")?
+    };
 
     let img_url = metadata.get("header_image_url")?.as_str()?.to_string();
     let title = metadata.get("title")?.as_str()?.to_string();

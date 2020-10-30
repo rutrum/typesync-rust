@@ -24,25 +24,54 @@ pub struct Model {
 }
 
 fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    orders.subscribe(|subs::UrlChanged(url)| log!(url));
+    //orders.subscribe(|subs::UrlChanged(url)| log!(url));
 
     log!(url);
 
     let page = match url.remaining_hash_path_parts().as_slice() {
         [] => Page::Home,
-        ["song", id] => {
-            log!(id);
+        ["song", id, rest @ ..] => {
             let gid: String = id.to_owned().to_string();
-            orders.perform_cmd({
-                async move {
-                    Msg::FoundSong(
-                        api_call::get_song_from_id(&gid)
-                            .await
-                            .ok()
-                            .flatten()
-                    )
+            match rest {
+                [ "standard" ] => {
+                    orders.perform_cmd({
+                        async move {
+                            Msg::MaybeStartTest(
+                                api_call::get_song_from_id(&gid)
+                                    .await
+                                    .ok()
+                                    .flatten(),
+                                TestMode::Standard,
+                            )
+                        }
+                    });
                 }
-            });
+                [ "simple" ] => {
+                    orders.perform_cmd({
+                        async move {
+                            Msg::MaybeStartTest(
+                                api_call::get_song_from_id(&gid)
+                                    .await
+                                    .ok()
+                                    .flatten(),
+                                TestMode::Simple,
+                            )
+                        }
+                    });
+                }
+                _ => {
+                    orders.perform_cmd({
+                        async move {
+                            Msg::FoundSong(
+                                api_call::get_song_from_id(&gid)
+                                    .await
+                                    .ok()
+                                    .flatten()
+                            )
+                        }
+                    });
+                }
+            }
             Page::Home
         }
         _ => Page::Home,
@@ -59,11 +88,13 @@ pub enum Msg {
     SearchBar(search_bar::Msg),
     FoundSong(Option<Song>),
     Summary(song_summary::Msg),
+    MaybeStartTest(Option<Song>, TestMode),
     StartTest(Song, TestMode),
     TypingTest(typing_test::Msg),
     TestDone(Song, TestMode, Duration, f32),
     Finished(finished::Msg),
     SubmitScores(Song),
+	ToHomeScreen,
 }
 
 /// Todo: rewrite all these stuff so there really aren't options in
@@ -97,7 +128,13 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 song_summary::update(msg, summary_model, orders);
             }
         }
+        Msg::MaybeStartTest(maybesong, mode) => {
+            if let Some(song) = maybesong {
+                model.page = Page::Test(typing_test::init(song, mode));
+            }
+        }
         Msg::StartTest(song, mode) => {
+            Url::current().add_hash_path_part(format!("{:?}", mode).to_lowercase()).go_and_push();
             model.page = Page::Test(typing_test::init(song, mode));
         }
         Msg::TypingTest(msg) => {
@@ -127,6 +164,10 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             model.page = Page::Summary(song_summary::init(Some(song)));
         }
         Msg::ChangePage(page) => model.page = page,
+		Msg::ToHomeScreen => {
+			Url::new().go_and_push();
+			model.page = Page::Home;
+		}
     }
 }
 

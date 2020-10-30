@@ -38,6 +38,7 @@ fn song_by_id(_state: State<SongCache>, genius_id: String) -> Json<Option<Song>>
     //let mut cache = state.lock().unwrap();
 
     let song = genius::search_song_with_genius_id(&genius_id);
+    println!("{:?}", song);
     match song {
         Err(_) => Json(None),
         Ok(song) => {

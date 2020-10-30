@@ -22,6 +22,7 @@ There are still features in the original version of the site that need to be rew
 
 - [ ] Save an diesel-friendly way to save testmode to the database (not string)
 - [ ] Move `DbScore` to api workspace
+- [ ] 2 caches, map (title, artist) -> genius\_id -> song
 
 ## New features to add
 
