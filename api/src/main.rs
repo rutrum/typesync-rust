@@ -11,7 +11,7 @@ use rocket::http::Status;
 use rocket::State;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
-use typesync::{Leaderboards, NewScore, Song, SongRequest};
+use typesync::{GeniusId, Plays, Leaderboards, NewScore, Song, SongRequest};
 
 use api::db;
 use api::genius;
@@ -19,7 +19,6 @@ use api::DbPool;
 
 use std::sync::Mutex;
 
-type GeniusId = String;
 type SongCache = Mutex<LruCache<GeniusId, Song>>;
 type GeniusIdCache = Mutex<LruCache<SongRequest, GeniusId>>;
 
@@ -109,6 +108,15 @@ fn fetch_leaderboards(conn: DbPool, genius_id: String) -> Json<Option<Leaderboar
     Json(db::get_leaderboards(conn, &genius_id).ok())
 }
 
+#[get("/popular")]
+fn popular_songs(conn: DbPool) -> Json<Vec<(Song, Plays)>> {
+    let scores = db::popular_songs(conn);
+
+    println!("{:?}", scores);
+
+    Json(vec![])
+}
+
 fn main() -> Result<(), Error> {
     let cors = rocket_cors::CorsOptions {
         allowed_origins: AllowedOrigins::all(),
@@ -120,7 +128,7 @@ fn main() -> Result<(), Error> {
     let id_cache: GeniusIdCache = Mutex::new(LruCache::new(100));
 
     rocket::ignite()
-        .mount("/", routes![song_request, song_by_id, save_score, fetch_leaderboards])
+        .mount("/", routes![popular_songs, song_request, song_by_id, save_score, fetch_leaderboards])
         .manage(song_cache)
         .manage(id_cache)
         .attach(cors)
