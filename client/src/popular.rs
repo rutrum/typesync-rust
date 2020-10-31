@@ -1,11 +1,13 @@
 use seed::{prelude::*, *};
 use crate::{Model, Msg};
+use typesync::SongPlays;
 
-pub fn view(model: &Model) -> Node<Msg> {
+pub fn view(popular: &Vec<SongPlays>) -> Node<Msg> {
     div![
-        model.popular.iter().map(|popular| {
+        popular.iter().enumerate().map(|(i,popular)| {
             let song = &popular.song;
             div![
+                ev(Ev::Click, move |_| Msg::LoadPopularByIndex(i)),
                 C!["popular-song"],
                 img![attrs!(At::Alt => "album art", At::Src => song.img_url),],
                 div![

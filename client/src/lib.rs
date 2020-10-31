@@ -96,6 +96,7 @@ pub enum Msg {
     SubmitScores(Song),
     ToHomeScreen,
     FetchedPopular(Vec<SongPlays>),
+    LoadPopularByIndex(usize),
 }
 
 /// Todo: rewrite all these stuff so there really aren't options in
@@ -103,6 +104,15 @@ pub enum Msg {
 /// the page changing Msg variants
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
+        Msg::LoadPopularByIndex(i) => {
+            if let Some(songplay) = model.popular.get(i) {
+                let song = &songplay.song;
+                let genius_id = song.genius_id.clone();
+
+                Url::new().set_path(&["song", &genius_id]).go_and_push();
+                model.page = Page::Summary(song_summary::init(Some(song.clone())));
+            }
+        }
         Msg::SearchBar(msg) => {
             search_bar::update(msg, &mut model.search_bar, orders);
         }
@@ -193,7 +203,7 @@ fn view(model: &Model) -> Node<Msg> {
         match &model.page {
             Page::Home => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
-                popular::view(&model),
+                popular::view(&model.popular),
             ],
             Page::Summary(summary_model) => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
