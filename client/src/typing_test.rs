@@ -142,7 +142,11 @@ pub fn view(model: &Model) -> Node<Msg> {
     let total_typed = model.typed_chars + model.buffer.len();
     let percentage = {
         let p = total_typed as f32 / model.total_chars as f32 * 100.0;
-        if p < 100.0 { p } else { 100.0 }
+        if p < 100.0 {
+            p
+        } else {
+            100.0
+        }
     };
 
     div![
@@ -174,9 +178,7 @@ pub fn view(model: &Model) -> Node<Msg> {
 fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
     div![
         C!["small-song"],
-        img![
-            attrs!(At::Alt => "album art", At::Src => song.img_url),
-        ],
+        img![attrs!(At::Alt => "album art", At::Src => song.img_url),],
         div![
             C!["details"],
             div![
@@ -186,7 +188,7 @@ fn small_song_view(song: &Song, mode: TestMode, timer: String) -> Node<Msg> {
             div![
                 p![C!["mode"], format!("{:?}", mode)],
                 p![
-                    C!["difficulty"], 
+                    C!["difficulty"],
                     C![format!("{:?}", song.lyrics(mode).difficulty)],
                     format!("{:?}", &song.lyrics(mode).difficulty)
                 ],
@@ -201,7 +203,7 @@ fn progress_bar_view(percentage: f32) -> Node<Msg> {
         C!["progress-bar"],
         div![
             C!["filler"],
-            style!{ "width" => format!("{}%", percentage) },
+            style! { "width" => format!("{}%", percentage) },
         ]
     ]
 }

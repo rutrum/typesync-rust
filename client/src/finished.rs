@@ -78,14 +78,8 @@ pub fn view(model: &Model) -> Node<Msg> {
             h2![C!["victory-message"], "Finished!"],
             div![
                 C!["stats"],
-                div![
-                    div![C!["value"], wpm],
-                    div!["wpm"],
-                ],
-                div![
-                    div![C!["value"], time],
-                    div!["time"],
-                ],
+                div![div![C!["value"], wpm], div!["wpm"],],
+                div![div![C!["value"], time], div!["time"],],
             ],
         ],
         div![
@@ -99,10 +93,7 @@ pub fn view(model: &Model) -> Node<Msg> {
                 ),
                 input_ev(Ev::Input, Msg::UpdateName)
             ],
-            button![
-                "Submit", 
-                attrs!(At::Type => "submit"),
-            ],
+            button!["Submit", attrs!(At::Type => "submit"),],
         ],
         p![if model.failed {
             "Failed to submit. Try again."

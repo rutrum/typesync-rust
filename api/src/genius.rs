@@ -103,10 +103,7 @@ fn json_to_song(text: &str, many: bool) -> Option<SongScrape> {
 
 fn query_genius_id(id: &str) -> reqwest::Result<String> {
     let client = reqwest::blocking::Client::new();
-    let url = Url::parse(
-        &format!("https://api.genius.com/songs/{}", id)
-    )
-    .unwrap();
+    let url = Url::parse(&format!("https://api.genius.com/songs/{}", id)).unwrap();
 
     client
         .get(url)

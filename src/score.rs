@@ -1,6 +1,6 @@
 use crate::TestMode;
-use std::time::Duration;
 use chrono::{TimeZone, Utc};
+use std::time::Duration;
 
 #[cfg(feature = "database")]
 use crate::db::schema::scores;
@@ -35,7 +35,11 @@ impl NewScore {
     }
 }
 
-#[cfg_attr(feature = "database", derive(Insertable, Queryable), table_name = "scores")]
+#[cfg_attr(
+    feature = "database",
+    derive(Insertable, Queryable),
+    table_name = "scores"
+)]
 pub struct DbScore {
     pub name: String,
     pub genius_id: String,

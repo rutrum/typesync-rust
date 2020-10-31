@@ -56,9 +56,7 @@ pub fn view(model: &Model) -> Node<Msg> {
         Some(song) => div![
             div![
                 C!["song-summary"],
-                img![
-                    attrs!("alt" => "album art", "src" => song.img_url),
-                ],
+                img![attrs!("alt" => "album art", "src" => song.img_url),],
                 div![
                     C!["details"],
                     div![
@@ -86,13 +84,9 @@ fn go_button(model: &Model) -> Node<Msg> {
         C![get_difficulty_class(&model)],
         IF!(model.mode.is_some() => C!["appear"]),
         IF!(model.mode.is_none() => C!["disappear"]),
-
         ev(Ev::Click, start_test),
         "Start!",
-        div![
-            C!["go-arrowhead"],
-            C![get_difficulty_class(&model)],
-        ],
+        div![C!["go-arrowhead"], C![get_difficulty_class(&model)],],
     ]
 }
 
@@ -113,8 +107,7 @@ fn leaderboard_view(leaderboard: &[Score], mode: TestMode) -> Node<Msg> {
     table![
         C!["leaderboard"],
         tr![th![attrs!(At::ColSpan => 4), &title],],
-        IF!(leaderboard.is_empty() =>
-            tr![td![attrs!(At::ColSpan => 4), format!(
+        IF!(leaderboard.is_empty() => tr![td![attrs!(At::ColSpan => 4), format!(
                 "Be the first to complete {} mode!",
                 title.to_lowercase()
             )]]
@@ -144,7 +137,6 @@ fn test_mode_view(selected: &Option<TestMode>, mode: TestMode, lyrics: &Lyrics) 
         C!["mode"],
         C![format!("{:?}", lyrics.difficulty)],
         IF!(is_selected => C!["selected"]),
-
         input![attrs!(At::Type => "radio", At::Name => "mode", At::Value => format!("{:?}", mode)),],
         div![format!("{:?}", mode)],
         div![

@@ -2,7 +2,7 @@ use crate::DbPool;
 use diesel::{prelude::*, MysqlConnection};
 use std::time::SystemTime;
 use typesync::db::schema;
-use typesync::{GeniusIdPopularity, GeniusId, TestMode, Leaderboards, NewScore, DbScore, Score};
+use typesync::{DbScore, GeniusIdPopularity, Leaderboards, NewScore, Score, TestMode};
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
@@ -17,7 +17,9 @@ pub fn insert_record(conn: DbPool, record: NewScore) -> Result<usize> {
     let now = SystemTime::now();
     let how_long = now.duration_since(SystemTime::UNIX_EPOCH).unwrap();
     let record_db = record.into_db_with_time(how_long);
-    diesel::insert_into(scores).values(record_db).execute(&*conn)
+    diesel::insert_into(scores)
+        .values(record_db)
+        .execute(&*conn)
 }
 
 pub fn select_records(conn: DbPool) -> Result<Vec<Score>> {
@@ -35,7 +37,8 @@ pub fn get_leaderboards(conn: DbPool, g_id: &str) -> Result<Leaderboards> {
         .limit(10)
         .load::<DbScore>(&*conn)?
         .into_iter()
-        .map(|x| x.into()).collect();
+        .map(|x| x.into())
+        .collect();
     let simple = scores
         .filter(mode.eq(TestMode::Simple.as_i8()))
         .filter(genius_id.eq(&g_id))
@@ -43,14 +46,11 @@ pub fn get_leaderboards(conn: DbPool, g_id: &str) -> Result<Leaderboards> {
         .limit(10)
         .load::<DbScore>(&*conn)?
         .into_iter()
-        .map(|x| x.into()).collect();
+        .map(|x| x.into())
+        .collect();
     Ok(Leaderboards { simple, standard })
 }
 
-#[macro_use]
-use diesel::deserialize::QueryableByName;
-
 pub fn popular_songs(conn: DbPool) -> Result<Vec<GeniusIdPopularity>> {
-    diesel::sql_query(GeniusIdPopularity::sql_query_from_scores())
-        .load(&*conn)
+    diesel::sql_query(GeniusIdPopularity::sql_query_from_scores()).load(&*conn)
 }

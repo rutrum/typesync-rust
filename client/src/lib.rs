@@ -33,27 +33,21 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
         ["song", id, rest @ ..] => {
             let gid: String = id.to_owned().to_string();
             match rest {
-                [ "standard" ] => {
+                ["standard"] => {
                     orders.perform_cmd({
                         async move {
                             Msg::MaybeStartTest(
-                                api_call::get_song_from_id(&gid)
-                                    .await
-                                    .ok()
-                                    .flatten(),
+                                api_call::get_song_from_id(&gid).await.ok().flatten(),
                                 TestMode::Standard,
                             )
                         }
                     });
                 }
-                [ "simple" ] => {
+                ["simple"] => {
                     orders.perform_cmd({
                         async move {
                             Msg::MaybeStartTest(
-                                api_call::get_song_from_id(&gid)
-                                    .await
-                                    .ok()
-                                    .flatten(),
+                                api_call::get_song_from_id(&gid).await.ok().flatten(),
                                 TestMode::Simple,
                             )
                         }
@@ -62,12 +56,7 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
                 _ => {
                     orders.perform_cmd({
                         async move {
-                            Msg::FoundSong(
-                                api_call::get_song_from_id(&gid)
-                                    .await
-                                    .ok()
-                                    .flatten()
-                            )
+                            Msg::FoundSong(api_call::get_song_from_id(&gid).await.ok().flatten())
                         }
                     });
                 }
@@ -75,9 +64,9 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
             Page::Home
         }
         _ => {
-			Url::new().go_and_replace();
-			Page::Home
-		}
+            Url::new().go_and_replace();
+            Page::Home
+        }
     };
 
     Model {
@@ -97,7 +86,7 @@ pub enum Msg {
     TestDone(Song, TestMode, Duration, f32),
     Finished(finished::Msg),
     SubmitScores(Song),
-	ToHomeScreen,
+    ToHomeScreen,
 }
 
 /// Todo: rewrite all these stuff so there really aren't options in
@@ -125,7 +114,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 });
             } else {
                 Url::new().go_and_replace();
-			}
+            }
             model.page = Page::Summary(song_summary::init(maybe_song));
         }
         Msg::Summary(msg) => {
@@ -141,7 +130,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             }
         }
         Msg::StartTest(song, mode) => {
-            Url::current().add_path_part(mode.to_lowercase()).go_and_push();
+            Url::current()
+                .add_path_part(mode.to_lowercase())
+                .go_and_push();
             model.page = Page::Test(typing_test::init(song, mode));
         }
         Msg::TypingTest(msg) => {
@@ -167,14 +158,16 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                     Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
                 }
             });
-            Url::new().set_path(&["song", &song.genius_id]).go_and_push();
+            Url::new()
+                .set_path(&["song", &song.genius_id])
+                .go_and_push();
             model.page = Page::Summary(song_summary::init(Some(song)));
         }
         Msg::ChangePage(page) => model.page = page,
-		Msg::ToHomeScreen => {
-			Url::new().go_and_push();
-			model.page = Page::Home;
-		}
+        Msg::ToHomeScreen => {
+            Url::new().go_and_push();
+            model.page = Page::Home;
+        }
     }
 }
 
