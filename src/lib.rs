@@ -2,7 +2,7 @@
 #[cfg(feature = "database")]
 extern crate diesel;
 
-use serde::Serialize;
+use serde::{Deserialize,Serialize};
 
 mod lyrics;
 mod score;
@@ -14,6 +14,7 @@ pub use song::{Song, SongRequest, TestMode, Tests};
 
 pub type GeniusId = String;
 
+#[cfg(feature = "database")]
 use diesel::sql_types::{BigInt, Text};
 
 #[cfg(feature = "database")]
@@ -25,6 +26,7 @@ pub struct GeniusIdPopularity {
     pub plays: i64,
 }
 
+#[cfg(feature = "database")]
 impl GeniusIdPopularity {
     pub fn sql_query_from_scores() -> &'static str {
         "SELECT genius_id, COUNT(genius_id) as plays \
@@ -35,7 +37,7 @@ impl GeniusIdPopularity {
     }
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct SongPlays {
     pub song: Song,
     pub plays: i64,

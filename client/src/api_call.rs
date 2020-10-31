@@ -1,5 +1,5 @@
 use seed::prelude::*;
-use typesync::{Leaderboards, NewScore, Song, SongRequest};
+use typesync::{SongPlays, Leaderboards, NewScore, Song, SongRequest};
 
 pub async fn get_song_from_id(genius_id: &str) -> fetch::Result<Option<Song>> {
     fetch(format!("http://localhost:8000/lyrics/{}", genius_id))
@@ -31,6 +31,14 @@ pub async fn post_song_request(song_request: SongRequest) -> fetch::Result<Optio
         .fetch()
         .await?
         .check_status()?
+        .json()
+        .await
+}
+
+pub async fn get_popular() -> fetch::Result<Vec<SongPlays>> {
+    fetch::Request::new("http://localhost:8000/popular")
+        .fetch()
+        .await?
         .json()
         .await
 }

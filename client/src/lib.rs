@@ -1,6 +1,7 @@
 use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{Song, TestMode};
+use typesync::{SongPlays};
 
 mod api_call;
 mod finished;
@@ -8,6 +9,7 @@ mod search_bar;
 mod song_summary;
 mod title;
 mod typing_test;
+mod popular;
 
 #[derive(Clone, Debug)]
 pub enum Page {
@@ -20,13 +22,12 @@ pub enum Page {
 #[derive(Clone, Debug)]
 pub struct Model {
     page: Page,
+    popular: Vec<SongPlays>,
     search_bar: search_bar::Model,
 }
 
 fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
     //orders.subscribe(|subs::UrlChanged(url)| log!(url));
-
-    log!(url);
 
     let page = match url.remaining_path_parts().as_slice() {
         [] => Page::Home,
@@ -69,8 +70,15 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
         }
     };
 
+    orders.perform_cmd({
+        async {
+            Msg::FetchedPopular(api_call::get_popular().await.unwrap_or(Vec::new()))
+        }
+    });
+
     Model {
         page,
+        popular: vec![],
         search_bar: search_bar::init(),
     }
 }
@@ -87,6 +95,7 @@ pub enum Msg {
     Finished(finished::Msg),
     SubmitScores(Song),
     ToHomeScreen,
+    FetchedPopular(Vec<SongPlays>),
 }
 
 /// Todo: rewrite all these stuff so there really aren't options in
@@ -168,6 +177,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             Url::new().go_and_push();
             model.page = Page::Home;
         }
+        Msg::FetchedPopular(popular) => model.popular = popular,
     }
 }
 
@@ -181,7 +191,10 @@ fn view(model: &Model) -> Node<Msg> {
     div![
         title::view(),
         match &model.page {
-            Page::Home => div![search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),],
+            Page::Home => div![
+                search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
+                popular::view(&model),
+            ],
             Page::Summary(summary_model) => div![
                 search_bar::view(&model.search_bar).map_msg(Msg::SearchBar),
                 song_summary::view(summary_model).map_msg(Msg::Summary),
