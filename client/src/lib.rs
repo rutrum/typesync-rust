@@ -70,11 +70,7 @@ fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Model {
         }
     };
 
-    orders.perform_cmd({
-        async {
-            Msg::FetchedPopular(api_call::get_popular().await.unwrap_or(Vec::new()))
-        }
-    });
+    refresh_popular(orders);
 
     Model {
         page,
@@ -110,6 +106,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 let genius_id = song.genius_id.clone();
 
                 Url::new().set_path(&["song", &genius_id]).go_and_push();
+                refresh_leaderboards(genius_id, orders);
                 model.page = Page::Summary(song_summary::init(Some(song.clone())));
             }
         }
@@ -123,14 +120,8 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
                 Url::new().set_path(&["song", &genius_id]).go_and_push();
 
-                orders.perform_cmd({
-                    async move {
-                        let l = api_call::get_leaderboards(&genius_id)
-                            .await
-                            .unwrap_or_default();
-                        Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
-                    }
-                });
+                refresh_leaderboards(genius_id, orders);
+
             } else {
                 Url::new().go_and_replace();
             }
@@ -184,11 +175,31 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         }
         Msg::ChangePage(page) => model.page = page,
         Msg::ToHomeScreen => {
+            refresh_popular(orders);
             Url::new().go_and_push();
             model.page = Page::Home;
         }
         Msg::FetchedPopular(popular) => model.popular = popular,
     }
+}
+
+fn refresh_popular(orders: &mut impl Orders<Msg>) {
+    orders.perform_cmd({
+        async {
+            Msg::FetchedPopular(api_call::get_popular().await.unwrap_or(Vec::new()))
+        }
+    });
+}
+
+fn refresh_leaderboards(genius_id: String, orders: &mut impl Orders<Msg>) {
+    orders.perform_cmd({
+        async move {
+            let l = api_call::get_leaderboards(&genius_id)
+                .await
+                .unwrap_or_default();
+            Msg::Summary(song_summary::Msg::UpdateLeaderboards(l))
+        }
+    });
 }
 
 // Idea: When matching on the page to determine

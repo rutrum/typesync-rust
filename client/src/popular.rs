@@ -16,7 +16,14 @@ pub fn view(popular: &Vec<SongPlays>) -> Node<Msg> {
                         h1![C!["song-title"], &song.title],
                         h2![C!["song-artist"], &song.artist],
                     ],
-                    div![C!["plays"], format!("{} play{}",popular.plays, if popular.plays == 1 { "" } else { "s" })],
+                    div![
+                        C!["plays"], 
+                        format!(
+                            "{} play{}",
+                            popular.plays, 
+                            if popular.plays == 1 { "" } else { "s" }
+                        ),
+                    ],
                 ]
             ]
         })
