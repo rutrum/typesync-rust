@@ -6,10 +6,11 @@ use typesync::{DbScore, GeniusIdPopularity, Leaderboards, NewScore, Score, TestM
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
+const DATABASE_URL: &'static str = env!("DATABASE_URL");
+
 pub fn create_connection() -> MysqlConnection {
-    let url = "mysql://root:example@127.0.0.1:3306/typesync";
-    MysqlConnection::establish(url)
-        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", url))
+    MysqlConnection::establish(DATABASE_URL)
+        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", DATABASE_URL))
 }
 
 pub fn insert_record(conn: DbPool, record: NewScore) -> Result<usize> {

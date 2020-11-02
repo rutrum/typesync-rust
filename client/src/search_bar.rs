@@ -74,6 +74,7 @@ fn title_input() -> Node<Msg> {
             At::AutoFocus => AtValue::None, // causes warning
             At::Placeholder => "Song Title",
             At::SpellCheck => "false",
+            At::AutoComplete => "off",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();
@@ -93,6 +94,7 @@ fn artist_input() -> Node<Msg> {
             At::Name => "title",
             At::Placeholder => "Artist Name",
             At::SpellCheck => "false",
+            At::AutoComplete => "off",
         ],
         ev(Ev::Change, |ev| {
             ev.prevent_default();

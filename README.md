@@ -21,14 +21,18 @@ There are still features in the original version of the site that need to be rew
 
 - [ ] Save an diesel-friendly way to save testmode to the database (not string)
 - [ ] Move `DbScore` to api workspace
+- [ ] Refactor it all
+- [ ] Move all song views into single module
 - [x] 2 caches, map (title, artist) -> genius\_id -> song
+- [ ] Centralize all links/domains/urls
+- [ ] Write a build script
 
 ## New features to add
 
 This should be done only after completing the above, as it will be equivalent or better than the previous site at that point.
 
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
-- [ ] Add most popular songs to home page
+- [x] Add most popular songs to home page
 - [ ] Add timed mode (how much of a song can you type in 1 minute)
 - [ ] Add a bit more UX, many people don't know what the website done on entry (perhaps a message board for new ips?)
 - [x] Routing, that is, the song summary of id 2 should be typesync.tech/song/2

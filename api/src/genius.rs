@@ -6,6 +6,8 @@ use select::document::Document;
 use select::node::Node;
 use select::predicate::{Class, Name};
 
+const GENIUS_BEARER_AUTH: &'static str = env!("GENIUS_BEARER_AUTH");
+
 struct SongScrape {
     pub artist: String,
     pub title: String,
@@ -68,7 +70,7 @@ fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
     let url = Url::parse(&format!("https://genius.com{}", route)).unwrap();
     client
         .get(url)
-        .bearer_auth("rk7Bf0CVL9lOWaEaxZnrOTIiAp2qXwMaKfJfWd3XPoLGGxAgJWz1zl1dwwgoCz17")
+        .bearer_auth(GENIUS_BEARER_AUTH)
         .send()?
         .text()
 }
@@ -107,7 +109,7 @@ fn query_genius_id(id: &str) -> reqwest::Result<String> {
 
     client
         .get(url)
-        .bearer_auth("rk7Bf0CVL9lOWaEaxZnrOTIiAp2qXwMaKfJfWd3XPoLGGxAgJWz1zl1dwwgoCz17")
+        .bearer_auth(GENIUS_BEARER_AUTH)
         .send()?
         .text()
 }
@@ -122,7 +124,7 @@ fn query_genius_search(title: &str, artist: &str) -> reqwest::Result<String> {
 
     client
         .get(url)
-        .bearer_auth("rk7Bf0CVL9lOWaEaxZnrOTIiAp2qXwMaKfJfWd3XPoLGGxAgJWz1zl1dwwgoCz17")
+        .bearer_auth(GENIUS_BEARER_AUTH)
         .send()?
         .text()
 }

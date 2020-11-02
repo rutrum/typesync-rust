@@ -139,8 +139,13 @@ fn main() -> Result<(), Error> {
     }
     .to_cors()?;
 
-    let song_cache: SongCache = Mutex::new(LruCache::new(100));
-    let id_cache: GeniusIdCache = Mutex::new(LruCache::new(100));
+    let song_cache_size: usize = env!("SONG_CACHE_SIZE").parse::<usize>()
+        .expect("SONG_CACHE_SIZE environment variable is not a positive integer.");
+    let genius_id_cache_size: usize = env!("GENIUS_ID_CACHE_SIZE").parse::<usize>()
+        .expect("GENIUS_ID_CACHE_SIZE environment variable is not a positive integer.");
+
+    let song_cache: SongCache = Mutex::new(LruCache::new(song_cache_size));
+    let id_cache: GeniusIdCache = Mutex::new(LruCache::new(genius_id_cache_size));
 
     rocket::ignite()
         .mount(

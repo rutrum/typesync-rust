@@ -7,3 +7,5 @@ Cargo.lock
 /api/target
 
 /client/index.css
+
+.env
