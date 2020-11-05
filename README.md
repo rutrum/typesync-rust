@@ -24,8 +24,8 @@ There are still features in the original version of the site that need to be rew
 - [ ] Refactor it all
 - [ ] Move all song views into single module
 - [x] 2 caches, map (title, artist) -> genius\_id -> song
-- [ ] Centralize all links/domains/urls
-- [ ] Write a build script
+- [x] Centralize all links/domains/urls
+- [ ] Write a build script/docker compose
 
 ## New features to add
 
@@ -33,7 +33,7 @@ This should be done only after completing the above, as it will be equivalent or
 
 - [ ] Host at rust.typesync.tech, or typesync.tech if I'm confident enough
 - [x] Add most popular songs to home page
-- [ ] Add timed mode (how much of a song can you type in 1 minute)
+- [ ] Add timed mode (how much of a song can you type in 1 minute, repeating the lyrics if necessary)
 - [ ] Add a bit more UX, many people don't know what the website done on entry (perhaps a message board for new ips?)
 - [x] Routing, that is, the song summary of id 2 should be typesync.tech/song/2
 - [ ] A comprehensive leaderboard page, possibly with statistics and graphs

@@ -64,25 +64,6 @@ fn song_request(
                 }
             }
         }
-        /*
-        Some(genius_id) => match song_cache.peek(genius_id) {
-            None => {
-                let song = genius::search_song_with_genius_id(&genius_id);
-                println!("{:?}", song);
-                match song {
-                    Err(_) => Json(None),
-                    Ok(song) => {
-                        println!("Found \"{}\" by {}", song.title, song.artist);
-                        Json(Some(song))
-                    }
-                }
-            }
-            Some(song) => {
-                println!("Found cached \"{}\" by {}", song.title, song.artist);
-                Json(Some(song.clone()))
-            }
-        },
-        */
         Some(genius_id) => Json(get_song_by_id(&song_state, &genius_id))
     }
 }

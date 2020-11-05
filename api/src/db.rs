@@ -6,9 +6,9 @@ use typesync::{DbScore, GeniusIdPopularity, Leaderboards, NewScore, Score, TestM
 
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
-const DATABASE_URL: &'static str = env!("DATABASE_URL");
-
 pub fn create_connection() -> MysqlConnection {
+    const DATABASE_URL: &'static str = env!("DATABASE_URL");
+
     MysqlConnection::establish(DATABASE_URL)
         .unwrap_or_else(|_| panic!("Cannot connect to database at {}", DATABASE_URL))
 }

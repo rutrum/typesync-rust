@@ -1,5 +1,5 @@
 use seed::{prelude::*, *};
-use crate::{Model, Msg};
+use crate::{Msg};
 use typesync::SongPlays;
 
 pub fn view(popular: &Vec<SongPlays>) -> Node<Msg> {
