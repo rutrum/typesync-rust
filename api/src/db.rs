@@ -7,10 +7,10 @@ use typesync::{DbScore, GeniusIdPopularity, Leaderboards, NewScore, Score, TestM
 type Result<T> = std::result::Result<T, diesel::result::Error>;
 
 pub fn create_connection() -> MysqlConnection {
-    const DATABASE_URL: &'static str = env!("DATABASE_URL");
+    let database_url: String = std::env::var("DATABASE_URL").expect("DATABASE_URL environment variable not set");
 
-    MysqlConnection::establish(DATABASE_URL)
-        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", DATABASE_URL))
+    MysqlConnection::establish(&database_url)
+        .unwrap_or_else(|_| panic!("Cannot connect to database at {}", database_url))
 }
 
 pub fn insert_record(conn: DbPool, record: NewScore) -> Result<usize> {

@@ -6,7 +6,9 @@ use select::document::Document;
 use select::node::Node;
 use select::predicate::{Class, Name};
 
-const GENIUS_BEARER_AUTH: &'static str = env!("GENIUS_BEARER_AUTH");
+lazy_static! {
+    static ref GENIUS_BEARER_AUTH: String = std::env::var("GENIUS_BEARER_AUTH").unwrap();
+}
 
 struct SongScrape {
     pub artist: String,
@@ -70,7 +72,7 @@ fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
     let url = Url::parse(&format!("https://genius.com{}", route)).unwrap();
     client
         .get(url)
-        .bearer_auth(GENIUS_BEARER_AUTH)
+        .bearer_auth(GENIUS_BEARER_AUTH.clone())
         .send()?
         .text()
 }
@@ -109,7 +111,7 @@ fn query_genius_id(id: &str) -> reqwest::Result<String> {
 
     client
         .get(url)
-        .bearer_auth(GENIUS_BEARER_AUTH)
+        .bearer_auth(GENIUS_BEARER_AUTH.clone())
         .send()?
         .text()
 }
@@ -124,7 +126,7 @@ fn query_genius_search(title: &str, artist: &str) -> reqwest::Result<String> {
 
     client
         .get(url)
-        .bearer_auth(GENIUS_BEARER_AUTH)
+        .bearer_auth(GENIUS_BEARER_AUTH.clone())
         .send()?
         .text()
 }

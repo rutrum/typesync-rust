@@ -120,9 +120,13 @@ fn main() -> Result<(), Error> {
     }
     .to_cors()?;
 
-    let song_cache_size: usize = env!("SONG_CACHE_SIZE").parse::<usize>()
+    let song_cache_size: usize = std::env::var("SONG_CACHE_SIZE")
+        .expect("SONG_CACHE_SIZE environment variable not defined")
+        .parse::<usize>()
         .expect("SONG_CACHE_SIZE environment variable is not a positive integer.");
-    let genius_id_cache_size: usize = env!("GENIUS_ID_CACHE_SIZE").parse::<usize>()
+    let genius_id_cache_size: usize = std::env::var("GENIUS_ID_CACHE_SIZE")
+        .expect("GENIUS_ID_CACHE_SIZE environment variable not defined")
+        .parse::<usize>()
         .expect("GENIUS_ID_CACHE_SIZE environment variable is not a positive integer.");
 
     let song_cache: SongCache = Mutex::new(LruCache::new(song_cache_size));

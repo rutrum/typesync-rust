@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 use seed::{prelude::*, *};
 use std::time::Duration;
 use typesync::{Song, TestMode};
@@ -134,7 +137,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         }
         Msg::MaybeStartTest(maybesong, mode) => {
             if let Some(song) = maybesong {
-                model.page = Page::Test(typing_test::init(song, mode));
+                model.page = Page::Test(typing_test::init(song, mode, orders));
             } else {
                 //Url::new().go_and_replace();
             }
@@ -143,7 +146,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
             Url::current()
                 .add_path_part(mode.to_lowercase())
                 .go_and_push();
-            model.page = Page::Test(typing_test::init(song, mode));
+            model.page = Page::Test(typing_test::init(song, mode, orders));
         }
         Msg::TypingTest(msg) => {
             if let Page::Test(typing_test_model) = &mut model.page {

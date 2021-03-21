@@ -15,6 +15,7 @@ pub struct Model {
     mode: TestMode,
     lyric_num: usize,
     typed_chars: usize,
+    input_ref: ElRef<web_sys::HtmlElement>,
 }
 
 impl Model {
@@ -64,7 +65,8 @@ impl Model {
     }
 }
 
-pub fn init(song: Song, mode: TestMode) -> Model {
+pub fn init(song: Song, mode: TestMode, orders: &mut impl Orders<SuperMsg>) -> Model {
+    orders.after_next_render(|_| SuperMsg::TypingTest(Msg::Focus));
     Model {
         buffer: String::new(),
         accurate: true,
@@ -75,10 +77,12 @@ pub fn init(song: Song, mode: TestMode) -> Model {
         mode,
         lyric_num: 0,
         typed_chars: 0,
+        input_ref: ElRef::new(),
     }
 }
 
 pub enum Msg {
+    Focus,
     KeyPress(String),
     InputChange(String),
     Tick,
@@ -87,6 +91,10 @@ pub enum Msg {
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     use Msg::*;
     match msg {
+        Focus => {
+            // Focus the input field
+            model.input_ref.get().expect("Failed to get").focus().expect("Failed to focus");
+        }
         KeyPress(key) => {
             // Start timer if necessary
             if model.time.is_none() {
@@ -156,11 +164,11 @@ pub fn view(model: &Model) -> Node<Msg> {
             attrs! {
                 At::AutoComplete => "off",
                 At::Type => "text",
-                At::AutoFocus => AtValue::None,
                 At::Placeholder => "Type to begin...",
                 At::Value => model.buffer,
                 At::SpellCheck => "false",
             },
+            el_ref(&model.input_ref),
             C![if model.accurate { "good" } else { "bad" }],
             keyboard_ev(Ev::KeyPress, |ev| Msg::KeyPress(ev.key())), // fires first
             input_ev(Ev::Input, Msg::InputChange),                   // fires second
