@@ -3,8 +3,20 @@ use serde_json::Value;
 use typesync::{Song, SongRequest};
 
 use select::document::Document;
-use select::node::Node;
-use select::predicate::{Class, Name};
+use select::node::{Find, Node};
+use select::predicate::Name;
+
+// Specifically need to search for "Classes that start with 'x'"
+use select::predicate::Predicate;
+pub struct ClassBeginsWith<T>(pub T);
+
+impl<'a> Predicate for ClassBeginsWith<&'a str> {
+    fn matches(&self, node: &Node) -> bool {
+        node.attr("class").map_or(false, |classes| {
+            classes.split_whitespace().any(|class| class.starts_with(self.0))
+        })
+    } 
+}
 
 lazy_static! {
     static ref GENIUS_BEARER_AUTH: String = std::env::var("GENIUS_BEARER_AUTH").unwrap();
@@ -62,14 +74,36 @@ pub fn search_song_on_genius(sr: &SongRequest) -> Result<Song, GeniusError> {
 
 fn scrape_for_lyrics(raw: &str) -> Option<String> {
     let doc: Document = Document::from_read(raw.as_bytes()).unwrap();
-    let div: Node = doc.find(Class("lyrics")).next()?;
-    let lyrics = div.find(Name("p")).next()?.text();
+    let divs = doc.find(ClassBeginsWith("Lyrics__Container")).into_selection();
+    let lyrics = divs.iter().map(|div| get_text_from_node(&div)).collect();
+    println!("{}", lyrics);
+    //let lyrics = div.find(Name("p")).next()?.text();
     Some(lyrics)
+}
+
+/// Modified from https://docs.rs/select/0.5.0/src/select/node.rs.html#127-140
+fn get_text_from_node(n: &Node) -> String {
+    let mut string = String::new();
+    recur(n, &mut string);
+    return string;
+
+    fn recur(node: &Node, string: &mut String) {
+        if let Some(text) = node.as_text() {
+            string.push_str(text);
+        }
+        if &node.html() == "<br>" {
+            string.push_str("\n");
+        }
+        for child in node.children() {
+            recur(&child, string)
+        }
+    }
 }
 
 fn query_genius_lyrics_page(route: &str) -> reqwest::Result<String> {
     let client = reqwest::blocking::Client::new();
     let url = Url::parse(&format!("https://genius.com{}", route)).unwrap();
+    println!("{}", url);
     client
         .get(url)
         .bearer_auth(GENIUS_BEARER_AUTH.clone())
