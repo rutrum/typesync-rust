@@ -33,7 +33,7 @@ impl GeniusIdPopularity {
              FROM scores \
              GROUP BY genius_id \
              ORDER BY plays DESC \
-             LIMIT 5"
+             LIMIT 10"
     }
 }
 

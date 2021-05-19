@@ -39,7 +39,10 @@ pub struct LyricsStats {
 
 impl LyricsStats {
     pub fn from_lyrics(lyrics: &[String]) -> LyricsStats {
-        let total = lyrics.iter().fold(0, |acc, s| acc + s.len() + 1) - 1;
+        let mut total = lyrics.iter().fold(0, |acc, s| acc + s.len() + 1);
+        if total > 0 {
+            total -= 1;
+        }
 
         let mut stats = LyricsStats {
             total,
@@ -62,7 +65,7 @@ impl LyricsStats {
             }
             stats.whitespace += 1; // end of line
         }
-        stats.whitespace -= 1; // remove end of file
+        stats.whitespace -= if stats.whitespace > 0 { 1 } else { 0 }; // remove end of file
 
         stats
     }

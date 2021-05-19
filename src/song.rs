@@ -102,6 +102,7 @@ fn clean(raw: String) -> Vec<String> {
 
     ascii
         .split('\n')
+        .map(|x| x.trim())
         .filter(|x| !x.is_empty())
         .filter(|x| !(x.starts_with('[') && x.ends_with(']')))
         .map(|x| x.to_string())

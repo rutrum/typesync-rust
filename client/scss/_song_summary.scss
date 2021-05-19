@@ -175,14 +175,14 @@
     @include shadow;
 
     width: $narrow;
-    height: 90px;
+    height: 110px;
 
     margin: 25px auto;
     display: flex;
 
     img {
         height: 100%;
-        max-width: 90px;
+        max-width: 110px;
     }
 
     .details {
@@ -212,8 +212,14 @@
     }
 
     .plays {
+        width: 20%;
         text-align: right;
-        font-size: 1.5em;
+        font-size: 2em;
         font-weight: 600;
+
+        .text {
+            font-style: italic;
+            font-size: .5em;
+        }
     }
 }
