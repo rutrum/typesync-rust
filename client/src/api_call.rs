@@ -1,5 +1,5 @@
 use seed::prelude::*;
-use typesync::{SongPlays, Leaderboards, NewScore, Song, SongRequest};
+use typesync::{Leaderboards, NewScore, Song, SongPlays, SongRequest};
 
 const API_URL: &'static str = env!("API_URL");
 

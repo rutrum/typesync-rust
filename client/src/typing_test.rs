@@ -93,7 +93,12 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<SuperMsg>) {
     match msg {
         Focus => {
             // Focus the input field
-            model.input_ref.get().expect("Failed to get").focus().expect("Failed to focus");
+            model
+                .input_ref
+                .get()
+                .expect("Failed to get")
+                .focus()
+                .expect("Failed to focus");
         }
         KeyPress(key) => {
             // Start timer if necessary

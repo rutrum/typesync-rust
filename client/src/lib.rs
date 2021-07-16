@@ -3,16 +3,16 @@ extern crate lazy_static;
 
 use seed::{prelude::*, *};
 use std::time::Duration;
+use typesync::SongPlays;
 use typesync::{Song, TestMode};
-use typesync::{SongPlays};
 
 mod api_call;
 mod finished;
+mod popular;
 mod search_bar;
 mod song_summary;
 mod title;
 mod typing_test;
-mod popular;
 
 #[derive(Clone, Debug)]
 pub enum Page {
@@ -124,7 +124,6 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
                 Url::new().set_path(&["song", &genius_id]).go_and_push();
 
                 refresh_leaderboards(genius_id, orders);
-
             } else {
                 Url::new().go_and_replace();
             }
@@ -188,9 +187,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 
 fn refresh_popular(orders: &mut impl Orders<Msg>) {
     orders.perform_cmd({
-        async {
-            Msg::FetchedPopular(api_call::get_popular().await.unwrap_or(Vec::new()))
-        }
+        async { Msg::FetchedPopular(api_call::get_popular().await.unwrap_or(Vec::new())) }
     });
 }
 

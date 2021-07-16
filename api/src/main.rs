@@ -11,7 +11,7 @@ use rocket::http::Status;
 use rocket::State;
 use rocket_contrib::json::Json;
 use rocket_cors::{AllowedOrigins, Error};
-use typesync::{GeniusId, Leaderboards, NewScore, SongPlays, Song, SongRequest};
+use typesync::{GeniusId, Leaderboards, NewScore, Song, SongPlays, SongRequest};
 
 use api::db;
 use api::genius;
@@ -64,7 +64,7 @@ fn song_request(
                 }
             }
         }
-        Some(genius_id) => Json(get_song_by_id(&song_state, &genius_id))
+        Some(genius_id) => Json(get_song_by_id(&song_state, &genius_id)),
     }
 }
 
@@ -101,14 +101,17 @@ fn fetch_leaderboards(conn: DbPool, genius_id: String) -> Json<Option<Leaderboar
 fn popular_songs(state: State<SongCache>, conn: DbPool) -> Json<Vec<SongPlays>> {
     let populars = db::popular_songs(conn).unwrap_or_default();
 
-    let songs = populars.iter().filter_map(|popular| {
-        get_song_by_id(&state, &popular.genius_id).map({
-            |song| SongPlays {
-                song,
-                plays: popular.plays,
-            }
+    let songs = populars
+        .iter()
+        .filter_map(|popular| {
+            get_song_by_id(&state, &popular.genius_id).map({
+                |song| SongPlays {
+                    song,
+                    plays: popular.plays,
+                }
+            })
         })
-    }).collect();
+        .collect();
 
     Json(songs)
 }

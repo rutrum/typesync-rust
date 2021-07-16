@@ -13,9 +13,11 @@ pub struct ClassBeginsWith<T>(pub T);
 impl<'a> Predicate for ClassBeginsWith<&'a str> {
     fn matches(&self, node: &Node) -> bool {
         node.attr("class").map_or(false, |classes| {
-            classes.split_whitespace().any(|class| class.starts_with(self.0))
+            classes
+                .split_whitespace()
+                .any(|class| class.starts_with(self.0))
         })
-    } 
+    }
 }
 
 lazy_static! {
@@ -74,7 +76,9 @@ pub fn search_song_on_genius(sr: &SongRequest) -> Result<Song, GeniusError> {
 
 fn scrape_for_lyrics(raw: &str) -> Option<String> {
     let doc: Document = Document::from_read(raw.as_bytes()).unwrap();
-    let divs = doc.find(ClassBeginsWith("Lyrics__Container")).into_selection();
+    let divs = doc
+        .find(ClassBeginsWith("Lyrics__Container"))
+        .into_selection();
     let lyrics = divs.iter().map(|div| get_text_from_node(&div)).collect();
     println!("{}", lyrics);
     //let lyrics = div.find(Name("p")).next()?.text();

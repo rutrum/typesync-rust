@@ -2,7 +2,7 @@
 #[cfg(feature = "database")]
 extern crate diesel;
 
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize, Serialize};
 
 mod lyrics;
 mod score;
