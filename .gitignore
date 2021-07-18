@@ -9,3 +9,9 @@ Cargo.lock
 /client/index.css
 
 .env
+.env_dev
+.env_prod
+
+Rocket_prod.toml
+
+*.tar.gz
